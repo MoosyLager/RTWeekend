@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "rtweekend.h"
 
@@ -24,19 +25,19 @@ public:
 
         // Create image object with black background
         EasyBMP::RGBColor black(0, 0, 0);
-        EasyBMP::Image image(imageWidth, imageHeight, "filename.png", black);
+        EasyBMP::Image image(imageWidth, imageHeight, "", black);
 
-        for ( int j = 0; j < imageHeight; j++ ) {
+        std::for_each(verticalImageIter.begin(), verticalImageIter.end(), [this](int j) {
             std::clog << "\rScanlines remaining: " << (imageHeight - j) << ' ' << std::flush;
-            for ( int i = 0; i < imageWidth; i++ ) {
+            std::for_each(horizontalImageIter.begin(), horizontalImageIter.end(), [this, j](int i) {
                 Colour pixelColour(0, 0, 0);
                 for ( int sample = 0; sample < samplesPerPixel; sample++ ) {
                     Ray ray = GetRay(i, j);
                     pixelColour += RayColour(ray, world);
                 }
                 WriteColour(image, pixelColour, i, j, samplesPerPixel);
-            }
-        }
+            });
+        });
 
         // Save Image
         std::string path = "C:/Users/shena/Documents/Random Programming Things/Raytracing In One Weekend Series/Images/";
@@ -65,6 +66,10 @@ private:
     Vec3 pixelDeltaU;
     Vec3 pixelDeltaV;
 
+    std::vector<int> horizontalImageIter;
+    std::vector<int> verticalImageIter;
+    std::vector<int> pixelSamplesIter;
+
     void Initialise()
     {
         imageHeight = static_cast<int>(imageWidth / aspectRatio);
@@ -88,6 +93,19 @@ private:
         // Calculate the location of the upper left pixel.
         auto viewportUpperLeft = centre - Vec3(0, 0, focalLength) - viewportU / 2 - viewportV / 2;
         pixelZeroLoc = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
+
+        horizontalImageIter.resize(imageWidth);
+        verticalImageIter.resize(imageHeight);
+        pixelSamplesIter.resize(samplesPerPixel);
+        for ( int i = 0; i < imageWidth; i++ ) {
+            horizontalImageIter[i] = i;
+        }
+        for ( int i = 0; i < imageHeight; i++ ) {
+            verticalImageIter[i] = i;
+        }
+        for ( int i = 0; i < samplesPerPixel; i++ ) {
+            pixelSamplesIter[i] = i;
+        }
     }
 
     Ray GetRay(int i, int j) const
