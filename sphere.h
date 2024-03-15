@@ -8,12 +8,12 @@ class Sphere : public Hitable
 {
 private:
     Point3 centre;
-    float radius;
+    double radius;
 
 public:
-    Sphere(Point3 _centre, float _radius) : centre(_centre), radius(_radius) {}
+    Sphere(Point3 _centre, double _radius) : centre(_centre), radius(_radius) {}
 
-    bool Hit(const Ray &ray, float rayTMin, float rayTMax, HitRecord &record) const override
+    bool Hit(const Ray &ray, Interval rayT, HitRecord &record) const override
     {
         Vec3 oc = ray.Origin() - centre;
         auto a = ray.Direction().LengthSquared();
@@ -26,16 +26,17 @@ public:
 
         // Find the nearest root that lies in the acceptable range
         auto root = (-halfB - sqrtD) / a;
-        if ( root <= rayTMin || rayTMax <= root ) {
+        if ( !rayT.Surrounds(root) ) {
             root = (-halfB + sqrtD) / a;
-            if ( root <= rayTMin || rayTMax <= root ) {
+            if ( !rayT.Surrounds(root) ) {
                 return false;
             }
         }
 
         record.t = root;
         record.p = ray.At(record.t);
-        record.normal = (record.p - centre) / radius;
+        Vec3 outwardNormal = (record.p - centre) / radius;
+        record.SetFaceNormal(ray, outwardNormal);
 
         return true;
     }

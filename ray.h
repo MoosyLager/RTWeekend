@@ -18,7 +18,7 @@ public:
 
     Point3 Direction() const { return direction; }
 
-    Point3 At(float t) const
+    Point3 At(double t) const
     {
         return origin + t * direction;
     }
