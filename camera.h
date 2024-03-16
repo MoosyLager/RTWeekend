@@ -1,6 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <execution>
 #include <filesystem>
 #include <iostream>
 #include <string>
@@ -10,7 +11,6 @@
 
 #include "colour.h"
 #include "hitable.h"
-#include "hitableList.h"
 #include "stbImplementation.h"
 
 class Camera
@@ -24,17 +24,17 @@ public:
     {
         Initialise();
 
-        std::for_each(verticalImageIter.begin(), verticalImageIter.end(), [this, &world](int j) {
+        for ( int j = 0; j < imageHeight; j++ ) {
             std::clog << "\rScanlines remaining: " << (imageHeight - j) << ' ' << std::flush;
-            std::for_each(horizontalImageIter.begin(), horizontalImageIter.end(), [this, j, &world](int i) {
+            for ( int i = 0; i < imageWidth; i++ ) {
                 Colour pixelColour(0, 0, 0);
-                std::for_each(pixelSamplesIter.begin(), pixelSamplesIter.end(), [this, j, i, &world, &pixelColour](int s) {
+                for ( int s = 0; s < samplesPerPixel; s++ ) {
                     Ray ray = GetRay(i, j);
                     pixelColour += RayColour(ray, world);
-                });
+                }
                 WriteColour(image, &pixelIndex, pixelColour, i, j, samplesPerPixel);
-            });
-        });
+            }
+        }
 
         // Save Image
         std::string path = "C:/Users/shena/Documents/Random Programming Things/Raytracing In One Weekend Series/Images/";
