@@ -1,7 +1,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <execution>
 #include <filesystem>
 #include <iostream>
 #include <string>
@@ -15,44 +14,6 @@
 
 class Camera
 {
-public:
-    double aspectRatio = 1.0;
-    int imageWidth = 100;
-    int samplesPerPixel = 10;
-
-    void Render(const Hitable &world)
-    {
-        Initialise();
-
-        for ( int j = 0; j < imageHeight; j++ ) {
-            std::clog << "\rScanlines remaining: " << (imageHeight - j) << ' ' << std::flush;
-            for ( int i = 0; i < imageWidth; i++ ) {
-                Colour pixelColour(0, 0, 0);
-                for ( int s = 0; s < samplesPerPixel; s++ ) {
-                    Ray ray = GetRay(i, j);
-                    pixelColour += RayColour(ray, world);
-                }
-                WriteColour(image, &pixelIndex, pixelColour, i, j, samplesPerPixel);
-            }
-        }
-
-        // Save Image
-        std::string path = "C:/Users/shena/Documents/Random Programming Things/Raytracing In One Weekend Series/Images/";
-        auto dirIter = std::filesystem::directory_iterator(path.c_str());
-        int fileCount = 0;
-        for ( auto &entry : dirIter ) {
-            if ( std::filesystem::is_regular_file(entry.path()) ) {
-                fileCount++;
-            }
-        }
-        std::string filename = path + std::to_string(fileCount + 1) + ".png";
-
-        stbi_write_png(filename.c_str(), imageWidth, imageHeight, imageComponents, image, imageWidth * imageComponents);
-        delete[] image;
-
-        std::clog << "\rDone.                 \n";
-    }
-
 private:
     int imageHeight;
     Point3 centre;
@@ -140,6 +101,44 @@ private:
         Vec3 unitDirection = UnitVector(ray.Direction());
         auto a = 0.5 * (unitDirection.Y() + 1.0);
         return (1.0 - a) * Colour(1.0, 1.0, 1.0) + a * Colour(0.5, 0.7, 1.0);
+    }
+
+public:
+    double aspectRatio = 1.0;
+    int imageWidth = 100;
+    int samplesPerPixel = 10;
+
+    void Render(const Hitable &world)
+    {
+        Initialise();
+
+        for ( int j = 0; j < imageHeight; j++ ) {
+            std::clog << "\rScanlines remaining: " << (imageHeight - j) << ' ' << std::flush;
+            for ( int i = 0; i < imageWidth; i++ ) {
+                Colour pixelColour(0, 0, 0);
+                for ( int s = 0; s < samplesPerPixel; s++ ) {
+                    Ray ray = GetRay(i, j);
+                    pixelColour += RayColour(ray, world);
+                }
+                WriteColour(image, &pixelIndex, pixelColour, i, j, samplesPerPixel);
+            }
+        }
+
+        // Save Image
+        std::string path = "C:/Users/shena/Documents/Random Programming Things/Raytracing In One Weekend Series/Images/";
+        auto dirIter = std::filesystem::directory_iterator(path.c_str());
+        int fileCount = 0;
+        for ( auto &entry : dirIter ) {
+            if ( std::filesystem::is_regular_file(entry.path()) ) {
+                fileCount++;
+            }
+        }
+        std::string filename = path + std::to_string(fileCount + 1) + ".png";
+
+        stbi_write_png(filename.c_str(), imageWidth, imageHeight, imageComponents, image, imageWidth * imageComponents);
+        delete[] image;
+
+        std::clog << "\rDone.                 \n";
     }
 };
 
