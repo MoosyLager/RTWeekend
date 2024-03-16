@@ -8,9 +8,10 @@
 
 #include "rtweekend.h"
 
-#include "EasyBMP.hpp"
 #include "colour.h"
 #include "hitable.h"
+#include "hitableList.h"
+#include "stbImplementation.h"
 
 class Camera
 {
@@ -23,38 +24,31 @@ public:
     {
         Initialise();
 
-        // Create image object with black background
-        EasyBMP::RGBColor black(0, 0, 0);
-        EasyBMP::Image image(imageWidth, imageHeight, "", black);
-
-        std::for_each(verticalImageIter.begin(), verticalImageIter.end(), [this](int j) {
+        std::for_each(verticalImageIter.begin(), verticalImageIter.end(), [this, &world](int j) {
             std::clog << "\rScanlines remaining: " << (imageHeight - j) << ' ' << std::flush;
-            std::for_each(horizontalImageIter.begin(), horizontalImageIter.end(), [this, j](int i) {
+            std::for_each(horizontalImageIter.begin(), horizontalImageIter.end(), [this, j, &world](int i) {
                 Colour pixelColour(0, 0, 0);
-                for ( int sample = 0; sample < samplesPerPixel; sample++ ) {
+                std::for_each(pixelSamplesIter.begin(), pixelSamplesIter.end(), [this, j, i, &world, &pixelColour](int s) {
                     Ray ray = GetRay(i, j);
                     pixelColour += RayColour(ray, world);
-                }
-                WriteColour(image, pixelColour, i, j, samplesPerPixel);
+                });
+                WriteColour(image, &pixelIndex, pixelColour, i, j, samplesPerPixel);
             });
         });
 
         // Save Image
         std::string path = "C:/Users/shena/Documents/Random Programming Things/Raytracing In One Weekend Series/Images/";
-
         auto dirIter = std::filesystem::directory_iterator(path.c_str());
         int fileCount = 0;
-
         for ( auto &entry : dirIter ) {
             if ( std::filesystem::is_regular_file(entry.path()) ) {
                 fileCount++;
             }
         }
-
         std::string filename = path + std::to_string(fileCount + 1) + ".png";
 
-        image.SetFileName(filename);
-        image.Write();
+        stbi_write_png(filename.c_str(), imageWidth, imageHeight, imageComponents, image, imageWidth * imageComponents);
+        delete[] image;
 
         std::clog << "\rDone.                 \n";
     }
@@ -65,6 +59,10 @@ private:
     Point3 pixelZeroLoc;
     Vec3 pixelDeltaU;
     Vec3 pixelDeltaV;
+
+    static const int imageComponents = 3;
+    uint8_t *image;
+    int pixelIndex;
 
     std::vector<int> horizontalImageIter;
     std::vector<int> verticalImageIter;
@@ -106,6 +104,9 @@ private:
         for ( int i = 0; i < samplesPerPixel; i++ ) {
             pixelSamplesIter[i] = i;
         }
+
+        image = new uint8_t[imageWidth * imageHeight * imageComponents];
+        pixelIndex = 0;
     }
 
     Ray GetRay(int i, int j) const
