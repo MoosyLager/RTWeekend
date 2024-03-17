@@ -90,11 +90,16 @@ private:
         return (px * pixelDeltaU) + (py * pixelDeltaV);
     }
 
-    Colour RayColour(const Ray &ray, const Hitable &world)
+    Colour RayColour(const Ray &ray, int depth, const Hitable &world)
     {
         HitRecord record;
+
+        // If we've exceeded the ray bounce limit, no more light is gathered
+        if ( depth <= 0 ) return Colour(0, 0, 0);
+
         if ( world.Hit(ray, Interval(0, INF), record) ) {
-            return 0.5 * (record.normal + Colour(1, 1, 1));
+            Vec3 direction = RandomOnHemisphere(record.normal);
+            return 0.5 * RayColour(Ray(record.point, direction), depth - 1, world);
         }
 
         Vec3 unitDirection = UnitVector(ray.Direction());
@@ -103,10 +108,10 @@ private:
     }
 
 public:
-    double aspectRatio = 1.0;
-    int imageWidth = 100;
-    int samplesPerPixel = 10;
-
+    double aspectRatio = 1.0; // Ratio of image width over height
+    int imageWidth = 100;     // Rendered image width in pixel count
+    int samplesPerPixel = 10; // Count of random samples for each pixel
+    int maxDepth = 10;        // Maximum number of ray bounces into scene
     void Render(const Hitable &world)
     {
         Initialise();
@@ -117,7 +122,7 @@ public:
                 Colour pixelColour(0, 0, 0);
                 std::for_each(std::execution::par, samplesIter.begin(), samplesIter.end(), [this, j, i, &world, &pixelColour](int s) {
                     Ray ray = GetRay(i, j);
-                    pixelColour += RayColour(ray, world);
+                    pixelColour += RayColour(ray, maxDepth, world);
                 });
                 int pixelIndex = 3 * (j * imageWidth + i);
                 WriteColour(image, pixelIndex, pixelColour, samplesPerPixel);

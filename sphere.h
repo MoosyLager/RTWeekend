@@ -34,8 +34,8 @@ public:
         }
 
         record.t = root;
-        record.p = ray.At(record.t);
-        Vec3 outwardNormal = (record.p - centre) / radius;
+        record.point = ray.At(record.t);
+        Vec3 outwardNormal = (record.point - centre) / radius;
         record.SetFaceNormal(ray, outwardNormal);
 
         return true;
