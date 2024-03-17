@@ -2,6 +2,7 @@
     "files.associations": {
         "random": "cpp",
         "vector": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "execution": "cpp"
     }
 }

@@ -24,8 +24,8 @@ inline double DegreesTooRadians(double degrees)
 
 inline double RandomDouble()
 {
+    static thread_local std::mt19937 generator;
     static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-    static std::mt19937 generator;
     return distribution(generator);
 }
 

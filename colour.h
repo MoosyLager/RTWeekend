@@ -7,7 +7,7 @@
 
 using Colour = Vec3;
 
-void WriteColour(uint8_t *image, int *pixelIndex, Colour pixelColour, int x, int y, int samplesPerPixel)
+void WriteColour(uint8_t *image, int pixelIndex, Colour pixelColour, int samplesPerPixel)
 {
 
     auto R = pixelColour.X();
@@ -26,9 +26,13 @@ void WriteColour(uint8_t *image, int *pixelIndex, Colour pixelColour, int x, int
     int IG = static_cast<int>(256 * intensity.Clamp(G));
     int IB = static_cast<int>(256 * intensity.Clamp(B));
 
-    image[(*pixelIndex)++] = IR;
-    image[(*pixelIndex)++] = IG;
-    image[(*pixelIndex)++] = IB;
+    // image[(*pixelIndex)++] = IR;
+    // image[(*pixelIndex)++] = IG;
+    // image[(*pixelIndex)++] = IB;
+
+    image[pixelIndex] = IR;
+    image[pixelIndex + 1] = IG;
+    image[pixelIndex + 2] = IB;
 }
 
 #endif
