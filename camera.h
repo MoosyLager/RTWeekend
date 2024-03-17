@@ -97,7 +97,7 @@ private:
         // If we've exceeded the ray bounce limit, no more light is gathered
         if ( depth <= 0 ) return Colour(0, 0, 0);
 
-        if ( world.Hit(ray, Interval(0, INF), record) ) {
+        if ( world.Hit(ray, Interval(0.001, INF), record) ) {
             Vec3 direction = RandomOnHemisphere(record.normal);
             return 0.5 * RayColour(Ray(record.point, direction), depth - 1, world);
         }
