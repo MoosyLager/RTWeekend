@@ -7,6 +7,11 @@
 
 using Colour = Vec3;
 
+inline double LinearToGamma(double linearComponent)
+{
+    return sqrt(linearComponent);
+}
+
 void WriteColour(uint8_t *image, int pixelIndex, Colour pixelColour, int samplesPerPixel)
 {
 
@@ -20,15 +25,16 @@ void WriteColour(uint8_t *image, int pixelIndex, Colour pixelColour, int samples
     G *= scale;
     B *= scale;
 
+    // Apply the linear to gamma transform
+    R = LinearToGamma(R);
+    G = LinearToGamma(G);
+    B = LinearToGamma(B);
+
     // Write the translated [0,255] value of each colour component
     static const Interval intensity(0.000, 0.999);
     int IR = static_cast<int>(256 * intensity.Clamp(R));
     int IG = static_cast<int>(256 * intensity.Clamp(G));
     int IB = static_cast<int>(256 * intensity.Clamp(B));
-
-    // image[(*pixelIndex)++] = IR;
-    // image[(*pixelIndex)++] = IG;
-    // image[(*pixelIndex)++] = IB;
 
     image[pixelIndex] = IR;
     image[pixelIndex + 1] = IG;

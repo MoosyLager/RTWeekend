@@ -4,6 +4,7 @@
         "vector": "cpp",
         "mutex": "cpp",
         "execution": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "ostream": "cpp"
     }
 }

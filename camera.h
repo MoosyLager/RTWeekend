@@ -98,7 +98,7 @@ private:
         if ( depth <= 0 ) return Colour(0, 0, 0);
 
         if ( world.Hit(ray, Interval(0.001, INF), record) ) {
-            Vec3 direction = RandomOnHemisphere(record.normal);
+            Vec3 direction = record.normal + RandomUnitVector();
             return 0.5 * RayColour(Ray(record.point, direction), depth - 1, world);
         }
 
@@ -116,8 +116,9 @@ public:
     {
         Initialise();
 
-        std::for_each(std::execution::par, verticalImageIter.begin(), verticalImageIter.end(), [this, &world](int j) {
-            std::clog << "\rScanlines remaining: " << (imageHeight - j) << ' ' << std::flush;
+        int scanlinesRemaining = imageHeight;
+        std::for_each(std::execution::par, verticalImageIter.begin(), verticalImageIter.end(), [this, &world, &scanlinesRemaining](int j) {
+            std::clog << "\rScanlines remaining: " << scanlinesRemaining-- << " " << std::flush;
             std::for_each(std::execution::par, horizontalImageIter.begin(), horizontalImageIter.end(), [this, j, &world](int i) {
                 Colour pixelColour(0, 0, 0);
                 std::for_each(std::execution::par, samplesIter.begin(), samplesIter.end(), [this, j, i, &world, &pixelColour](int s) {
