@@ -111,22 +111,6 @@ public:
     {
         Initialise();
 
-#define MT 0
-#if MT
-        for ( int j = 0; j < imageHeight; j++ ) {
-            std::clog << "\rScanlines remaining: " << (imageHeight - j) << ' ' << std::flush;
-            for ( int i = 0; i < imageWidth; i++ ) {
-                Colour pixelColour(0, 0, 0);
-                for ( int s = 0; s < samplesPerPixel; s++ ) {
-                    Ray ray = GetRay(i, j);
-                    pixelColour += RayColour(ray, world);
-                }
-                int pixelIndex = 3 * (j * imageWidth + i);
-                WriteColour(image, pixelIndex, pixelColour, samplesPerPixel);
-            }
-        }
-#else
-
         std::for_each(std::execution::par, verticalImageIter.begin(), verticalImageIter.end(), [this, &world](int j) {
             std::clog << "\rScanlines remaining: " << (imageHeight - j) << ' ' << std::flush;
             std::for_each(std::execution::par, horizontalImageIter.begin(), horizontalImageIter.end(), [this, j, &world](int i) {
@@ -139,8 +123,6 @@ public:
                 WriteColour(image, pixelIndex, pixelColour, samplesPerPixel);
             });
         });
-
-#endif
 
         // Save Image
         std::string path = "C:/Users/shena/Documents/Random Programming Things/Raytracing In One Weekend Series/Images/";
