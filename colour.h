@@ -3,11 +3,11 @@
 
 #include "vec3.h"
 
-#include "EasyBMP.hpp"
+#include "stbImplementation.h"
 
 using Colour = Vec3;
 
-void WriteColour(EasyBMP::Image &image, Colour pixelColour, int x, int y, int samplesPerPixel)
+void WriteColour(uint8_t *image, int pixelIndex, Colour pixelColour, int samplesPerPixel)
 {
 
     auto R = pixelColour.X();
@@ -26,8 +26,13 @@ void WriteColour(EasyBMP::Image &image, Colour pixelColour, int x, int y, int sa
     int IG = static_cast<int>(256 * intensity.Clamp(G));
     int IB = static_cast<int>(256 * intensity.Clamp(B));
 
-    EasyBMP::RGBColor pixel(IR, IG, IB);
-    image.SetPixel(x, y, pixel);
+    // image[(*pixelIndex)++] = IR;
+    // image[(*pixelIndex)++] = IG;
+    // image[(*pixelIndex)++] = IB;
+
+    image[pixelIndex] = IR;
+    image[pixelIndex + 1] = IG;
+    image[pixelIndex + 2] = IB;
 }
 
 #endif
