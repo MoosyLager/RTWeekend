@@ -3,6 +3,7 @@
         "random": "cpp",
         "vector": "cpp",
         "mutex": "cpp",
-        "execution": "cpp"
+        "execution": "cpp",
+        "chrono": "cpp"
     }
 }
