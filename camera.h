@@ -17,11 +17,12 @@
 class Camera
 {
 private:
-    int imageHeight;
-    Point3 centre;
-    Point3 pixelZeroLoc;
-    Vec3 pixelDeltaU;
-    Vec3 pixelDeltaV;
+    int imageHeight;     // Rendered image height
+    Point3 centre;       // Camera center
+    Point3 pixelZeroLoc; // Location of pixel 0, 0
+    Vec3 pixelDeltaU;    // Offset to pixel to the right
+    Vec3 pixelDeltaV;    // Offset to pixel below
+    Vec3 u, v, w;        // Camera frame basis vectors
 
     static const int imageComponents = 3;
     uint8_t *image;
@@ -35,23 +36,30 @@ private:
         imageHeight = static_cast<int>(imageWidth / aspectRatio);
         imageHeight = (imageHeight < 1) ? 1 : imageHeight;
 
-        centre = Point3(0, 0, 0);
+        centre = lookFrom;
 
         // Determine viewport dimensions.
-        auto focalLength = 1.0;
-        auto viewportHeight = 2.0;
+        auto focalLength = (lookFrom - lookAt).Length();
+        auto theta = DegreesTooRadians(verticalFOV);
+        auto h = tan(theta / 2);
+        auto viewportHeight = 2 * h * focalLength;
         auto viewportWidth = viewportHeight * (static_cast<double>(imageWidth) / imageHeight);
 
+        // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
+        w = UnitVector(lookFrom - lookAt);
+        u = UnitVector(Cross(vecUp, w));
+        v = Cross(w, u);
+
         // Calculate the vectors across the horizontal and down the vertical viewport edges
-        auto viewportU = Vec3(viewportWidth, 0, 0);
-        auto viewportV = Vec3(0, -viewportHeight, 0);
+        auto viewportU = viewportWidth * u;   // Vector across viewport horizontal edge
+        auto viewportV = viewportHeight * -v; // Vector down viewport vertical edge
 
         // Calculate the horizontal and vertical ddlta vectors from pixel to pixel
         pixelDeltaU = viewportU / imageWidth;
         pixelDeltaV = viewportV / imageHeight;
 
         // Calculate the location of the upper left pixel.
-        auto viewportUpperLeft = centre - Vec3(0, 0, focalLength) - viewportU / 2 - viewportV / 2;
+        auto viewportUpperLeft = centre - (focalLength * w) - viewportU / 2 - viewportV / 2;
         pixelZeroLoc = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
 
         horizontalImageIter.resize(imageWidth);
@@ -117,6 +125,12 @@ public:
     int imageWidth = 100;     // Rendered image width in pixel count
     int samplesPerPixel = 10; // Count of random samples for each pixel
     int maxDepth = 10;        // Maximum number of ray bounces into scene
+
+    double verticalFOV = 90;            // Vertical view angle (field of view)
+    Point3 lookFrom = Point3(0, 0, -1); // Point camera is looking from
+    Point3 lookAt = Point3(0, 0, 0);    // Point camera is looking at
+    Vec3 vecUp = Vec3(0, 1, 0);         // Camera-relative "up" direction
+
     void Render(const Hitable &world)
     {
         Initialise();

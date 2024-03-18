@@ -27,7 +27,12 @@ int main()
     cam.aspectRatio = 16.0 / 9.0;
     cam.imageWidth = 400;
     cam.samplesPerPixel = 100;
-    cam.maxDepth = 50;
+    cam.maxDepth = 10;
+
+    cam.verticalFOV = 20;
+    cam.lookFrom = Point3(-2, 2, 1);
+    cam.lookAt = Point3(0, 0, -1);
+    cam.vecUp = Vec3(0, 1, 0);
 
     cam.Render(world);
 
