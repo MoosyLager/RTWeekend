@@ -34,6 +34,9 @@ int main()
     cam.lookAt = Point3(0, 0, -1);
     cam.vecUp = Vec3(0, 1, 0);
 
+    cam.defocusAngle = 10.0;
+    cam.focusDistance = 3.4;
+
     cam.Render(world);
 
     return 0;

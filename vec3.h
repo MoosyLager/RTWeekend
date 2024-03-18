@@ -133,6 +133,16 @@ inline Vec3 UnitVector(Vec3 v)
     return v / v.Length();
 }
 
+inline Vec3 RandomInUnitDisk()
+{
+    while ( true ) {
+        auto p = Vec3(RandomDouble(-1, 1), RandomDouble(-1, 1), 0);
+        if ( p.LengthSquared() < 1 ) {
+            return p;
+        }
+    }
+}
+
 inline Vec3 RandomInUnitSphere()
 {
     while ( true ) {
