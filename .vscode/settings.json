@@ -5,6 +5,7 @@
         "mutex": "cpp",
         "execution": "cpp",
         "chrono": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "memory": "cpp"
     }
 }
