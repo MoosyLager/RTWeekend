@@ -1,13 +1,16 @@
 #ifndef HITABLE_H
 #define HITABLE_H
 
-#include "ray.h"
+#include "rtweekend.h"
+
+class Material;
 
 class HitRecord
 {
 public:
     Point3 point;
     Vec3 normal;
+    shared_ptr<Material> material;
     double t;
     bool frontFace;
 

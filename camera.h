@@ -11,6 +11,7 @@
 
 #include "colour.h"
 #include "hitable.h"
+#include "material.h"
 #include "stbImplementation.h"
 
 class Camera
@@ -98,8 +99,12 @@ private:
         if ( depth <= 0 ) return Colour(0, 0, 0);
 
         if ( world.Hit(ray, Interval(0.001, INF), record) ) {
-            Vec3 direction = record.normal + RandomUnitVector();
-            return 0.5 * RayColour(Ray(record.point, direction), depth - 1, world);
+            Ray scattered;
+            Colour attenuation;
+            if ( record.material->Scatter(ray, record, attenuation, scattered) ) {
+                return attenuation * RayColour(scattered, depth - 1, world);
+            }
+            return Colour(0, 0, 0);
         }
 
         Vec3 unitDirection = UnitVector(ray.Direction());

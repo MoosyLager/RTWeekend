@@ -9,9 +9,11 @@ class Sphere : public Hitable
 private:
     Point3 centre;
     double radius;
+    shared_ptr<Material> material;
 
 public:
-    Sphere(Point3 _centre, double _radius) : centre(_centre), radius(_radius) {}
+    Sphere(Point3 _centre, double _radius, shared_ptr<Material> _material)
+        : centre(_centre), radius(_radius), material(_material) {}
 
     bool Hit(const Ray &ray, Interval rayT, HitRecord &record) const override
     {
@@ -37,6 +39,7 @@ public:
         record.point = ray.At(record.t);
         Vec3 outwardNormal = (record.point - centre) / radius;
         record.SetFaceNormal(ray, outwardNormal);
+        record.material = material;
 
         return true;
     }
