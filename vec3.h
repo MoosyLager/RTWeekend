@@ -158,9 +158,17 @@ inline Vec3 RandomOnHemisphere(const Vec3 &normal)
     }
 }
 
-Vec3 Reflect(const Vec3 &v, const Vec3 &n)
+inline Vec3 Reflect(const Vec3 &v, const Vec3 &n)
 {
     return v - 2 * Dot(v, n) * n;
+}
+
+inline Vec3 Refract(const Vec3 &uv, const Vec3 &n, double etaIOverEtaT)
+{
+    auto cosTheta = fmin(Dot(-uv, n), 1.0);
+    Vec3 rOutPerp = etaIOverEtaT * (uv + cosTheta * n);
+    Vec3 rOutParallel = -sqrt(fabs(1.0 - rOutPerp.LengthSquared())) * n;
+    return rOutPerp + rOutParallel;
 }
 
 #endif
