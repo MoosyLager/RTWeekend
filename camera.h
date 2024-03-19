@@ -49,7 +49,7 @@ public:
         });
 
         // Save Image
-        std::string path = "C:/Users/shena/Documents/Random Programming Things/Raytracing In One Weekend Series/Images/";
+        std::string path = "C:/Users/shena/Documents/Random Programming Things/Raytracing In One Weekend Series/Images/Book 2/";
         auto dirIter = std::filesystem::directory_iterator(path.c_str());
         int fileCount = 0;
         for ( auto &entry : dirIter ) {
@@ -143,8 +143,9 @@ private:
 
         auto rayOrigin = (defocusAngle <= 0) ? centre : DefocusDiskSample();
         auto rayDirection = pixelSample - rayOrigin;
+        auto rayTime = RandomDouble();
 
-        return Ray(rayOrigin, rayDirection);
+        return Ray(rayOrigin, rayDirection, rayTime);
     }
 
     Vec3 PixelSampleSource() const

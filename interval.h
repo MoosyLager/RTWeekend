@@ -27,6 +27,17 @@ public:
         return x;
     }
 
+    double Size() const
+    {
+        return max - min;
+    }
+
+    Interval Expand(double delta) const
+    {
+        auto padding = delta / 2;
+        return Interval(min - padding, max + padding);
+    }
+
     static const Interval EMPTY, UNIVERSE;
 };
 

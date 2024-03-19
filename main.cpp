@@ -26,7 +26,8 @@ void FinalRenderBookOne()
                     // diffuse
                     auto albedo = Colour::Random() * Colour::Random();
                     sphereMaterial = make_shared<Lambertian>(albedo);
-                    world.Add(make_shared<Sphere>(centre, 0.2, sphereMaterial));
+                    auto centre2 = centre + Vec3(0, RandomDouble(0, 0.5), 0);
+                    world.Add(make_shared<Sphere>(centre, centre2, 0.2, sphereMaterial));
                 } else if ( chooseMaterial < 0.95 ) {
                     // metal
                     auto albedo = Colour::Random(0.5, 1);
@@ -54,9 +55,9 @@ void FinalRenderBookOne()
     Camera cam;
 
     cam.aspectRatio = 16.0 / 9.0;
-    cam.imageWidth = 1200;
-    cam.samplesPerPixel = 500;
-    cam.maxDepth = 50;
+    cam.imageWidth = 400;
+    cam.samplesPerPixel = 100;
+    cam.maxDepth = 10;
 
     cam.verticalFOV = 20;
     cam.lookFrom = Point3(13, 2, 3);

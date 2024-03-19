@@ -7,16 +7,34 @@
 class Sphere : public Hitable
 {
 private:
-    Point3 centre;
+    Point3 centre1;
     double radius;
     shared_ptr<Material> material;
+    bool isMoving;
+    Vec3 centreVec;
+
+    Point3 Centre(double time) const
+    {
+        // Linearly interpolate from centre1 to centre2 according to time, where t=0 yields
+        // centre1 and t=1 yields centre2
+        return centre1 + time * centreVec;
+    }
 
 public:
+    // Stationary Sphere
     Sphere(Point3 _centre, double _radius, shared_ptr<Material> _material)
-        : centre(_centre), radius(_radius), material(_material) {}
+        : centre1(_centre), radius(_radius), material(_material), isMoving(false) {}
+
+    // Moving Sphere
+    Sphere(Point3 _centre1, Point3 _centre2, double _radius, shared_ptr<Material> _material)
+        : centre1(_centre1), radius(_radius), material(_material), isMoving(true)
+    {
+        centreVec = _centre2 - _centre1;
+    }
 
     bool Hit(const Ray &ray, Interval rayT, HitRecord &record) const override
     {
+        Point3 centre = isMoving ? Centre(ray.Time()) : centre1;
         Vec3 oc = ray.Origin() - centre;
         auto a = ray.Direction().LengthSquared();
         auto halfB = Dot(oc, ray.Direction());
@@ -37,7 +55,7 @@ public:
 
         record.t = root;
         record.point = ray.At(record.t);
-        Vec3 outwardNormal = (record.point - centre) / radius;
+        Vec3 outwardNormal = (record.point - centre1) / radius;
         record.SetFaceNormal(ray, outwardNormal);
         record.material = material;
 

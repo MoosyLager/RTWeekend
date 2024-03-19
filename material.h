@@ -28,7 +28,7 @@ public:
         // Catch degenerate scatter direction
         if ( scatterDirection.NearZero() ) scatterDirection = record.normal;
 
-        scattered = Ray(record.point, scatterDirection);
+        scattered = Ray(record.point, scatterDirection, rayIn.Time());
         attenuation = albedo;
         return true;
     }
@@ -46,7 +46,7 @@ public:
     bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const override
     {
         Vec3 reflected = Reflect(rayIn.Direction(), record.normal);
-        scattered = Ray(record.point, reflected + fuzz * RandomUnitVector());
+        scattered = Ray(record.point, reflected + fuzz * RandomUnitVector(), rayIn.Time());
         attenuation = albedo;
         return (Dot(scattered.Direction(), record.normal) > 0);
     }
@@ -86,7 +86,7 @@ public:
             direction = Refract(unitDirection, record.normal, refractionRatio);
         }
 
-        scattered = Ray(record.point, direction);
+        scattered = Ray(record.point, direction, rayIn.Time());
         return true;
     }
 };
