@@ -6,7 +6,7 @@
 #include "material.h"
 #include "sphere.h"
 
-int main()
+void FinalRenderBookOne()
 {
     // World
     HitableList world;
@@ -56,7 +56,7 @@ int main()
     cam.aspectRatio = 16.0 / 9.0;
     cam.imageWidth = 1200;
     cam.samplesPerPixel = 500;
-    cam.maxDepth = 6;
+    cam.maxDepth = 50;
 
     cam.verticalFOV = 20;
     cam.lookFrom = Point3(13, 2, 3);
@@ -67,6 +67,16 @@ int main()
     cam.focusDistance = 10.0;
 
     cam.Render(world);
+}
+
+int main()
+{
+
+    switch ( 1 ) {
+        case 1:
+            FinalRenderBookOne();
+            break;
+    }
 
     return 0;
 }
