@@ -22,6 +22,13 @@ public:
         z = Interval(fmin(a[2], b[2]), fmax(a[2], b[2]));
     }
 
+    AABB(const AABB &box0, const AABB &box1)
+    {
+        x = Interval(box0.x, box1.x);
+        y = Interval(box0.y, box1.y);
+        z = Interval(box0.z, box1.z);
+    }
+
     const Interval &Axis(int n) const
     {
         if ( n == 1 ) return y;

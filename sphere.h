@@ -12,6 +12,7 @@ private:
     shared_ptr<Material> material;
     bool isMoving;
     Vec3 centreVec;
+    AABB boundingBox;
 
     Point3 Centre(double time) const
     {
@@ -23,12 +24,20 @@ private:
 public:
     // Stationary Sphere
     Sphere(Point3 _centre, double _radius, shared_ptr<Material> _material)
-        : centre1(_centre), radius(_radius), material(_material), isMoving(false) {}
+        : centre1(_centre), radius(_radius), material(_material), isMoving(false)
+    {
+        auto radiusVec = Vec3(radius, radius, radius);
+    }
 
     // Moving Sphere
     Sphere(Point3 _centre1, Point3 _centre2, double _radius, shared_ptr<Material> _material)
         : centre1(_centre1), radius(_radius), material(_material), isMoving(true)
     {
+        auto radiusVec = Vec3(radius, radius, radius);
+        AABB box1(_centre1 - radiusVec, _centre1 + radiusVec);
+        AABB box2(_centre2 - radiusVec, _centre2 + radiusVec);
+        boundingBox = AABB(box1, box2);
+
         centreVec = _centre2 - _centre1;
     }
 
@@ -61,6 +70,8 @@ public:
 
         return true;
     }
+
+    AABB BoundingBox() const override { return boundingBox; }
 };
 
 #endif

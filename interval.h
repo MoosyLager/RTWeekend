@@ -10,6 +10,9 @@ public:
 
     Interval(double _min, double _max) : min(_min), max(_max) {}
 
+    Interval(const Interval &a, const Interval &b)
+        : min(fmin(a.min, b.min)), max(fmax(a.max, b.max)) {}
+
     bool Contains(double x) const
     {
         return min <= x && x <= max;
