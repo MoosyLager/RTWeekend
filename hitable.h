@@ -1,6 +1,7 @@
 #ifndef HITABLE_H
 #define HITABLE_H
 
+#include "aabb.h"
 #include "rtweekend.h"
 
 class Material;
@@ -30,6 +31,8 @@ public:
     virtual ~Hitable() = default;
 
     virtual bool Hit(const Ray &ray, Interval rayT, HitRecord &record) const = 0;
+
+    virtual AABB BoundingBox() const = 0;
 };
 
 #endif

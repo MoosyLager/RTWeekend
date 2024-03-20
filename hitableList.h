@@ -1,6 +1,7 @@
 #ifndef HITABLE_LIST_H
 #define HITABLE_LIST_H
 
+#include "aabb.h"
 #include "hitable.h"
 
 #include <memory>
@@ -20,7 +21,11 @@ public:
 
     void Clear() { objects.clear(); }
 
-    void Add(shared_ptr<Hitable> object) { objects.push_back(object); }
+    void Add(shared_ptr<Hitable> object)
+    {
+        objects.push_back(object);
+        boundingBox = AABB(boundingBox, object->BoundingBox());
+    }
 
     bool Hit(const Ray &ray, Interval rayT, HitRecord &record) const override
     {
@@ -38,6 +43,11 @@ public:
 
         return hitAnything;
     }
+
+    AABB BoundingBox() const override { return boundingBox; }
+
+private:
+    AABB boundingBox;
 };
 
 #endif
