@@ -60,7 +60,7 @@ public:
         std::string filename = path + std::to_string(fileCount + 1) + ".png";
 
         stbi_write_png(filename.c_str(), imageWidth, imageHeight, imageComponents, image, imageWidth * imageComponents);
-        delete[] image;
+        STBI_FREE(image);
 
         std::clog << "\rDone.                 \n";
     }

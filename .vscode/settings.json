@@ -7,6 +7,7 @@
         "chrono": "cpp",
         "ostream": "cpp",
         "memory": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "atomic": "cpp"
     }
 }

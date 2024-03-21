@@ -163,9 +163,32 @@ void TwoSpheres()
     cam.Render(world);
 }
 
+void Mars()
+{
+    auto marsTexture = make_shared<ImageTexture>("mars.jpg");
+    auto marsSurface = make_shared<Lambertian>(marsTexture);
+    auto planet = make_shared<Sphere>(Point3(0, 0, 0), 2, marsSurface);
+
+    Camera cam;
+
+    cam.aspectRatio = 16.0 / 9.0;
+    cam.imageWidth = 400;
+    cam.samplesPerPixel = 100;
+    cam.maxDepth = 10;
+
+    cam.verticalFOV = 20;
+    cam.lookFrom = Point3(0, 0, 12);
+    cam.lookAt = Point3(0, 0, 0);
+    cam.vecUp = Vec3(0, 1, 0);
+
+    cam.defocusAngle = 0;
+
+    cam.Render(HitableList(planet));
+}
+
 int main()
 {
-    switch ( 3 ) {
+    switch ( 4 ) {
         case 1:
             FinalRenderBookOne();
             break;
@@ -174,6 +197,9 @@ int main()
             break;
         case 3:
             TwoSpheres();
+            break;
+        case 4:
+            Mars();
             break;
     }
     return 0;

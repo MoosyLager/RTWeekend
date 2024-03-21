@@ -2,6 +2,7 @@
 #define TEXTURE_H
 
 #include "rtweekend.h"
+#include "stbImplementation.h"
 
 class Texture
 {
@@ -53,6 +54,32 @@ public:
         bool isEven = ((xInteger + yInteger + zInteger) & 2) == 0;
 
         return isEven ? even->Value(u, v, p) : odd->Value(u, v, p);
+    }
+};
+
+class ImageTexture : public Texture
+{
+private:
+    RTWImage image;
+
+public:
+    ImageTexture(const char *filename) : image(filename) {}
+
+    Colour Value(double u, double v, const Point3 &p) const override
+    {
+        // If we haave no texture data, then reutrn soild cyan as a debugging aid.
+        if ( image.Height() <= 0 ) return Colour(0, 1, 1);
+
+        // Clamp input texture coordinates to [0,1] x [0,1]
+        u = Interval(0, 1).Clamp(u);
+        v = 1.0 - Interval(0, 1).Clamp(v); // Flip V to image coordinates
+
+        auto i = static_cast<int>(u * image.Width());
+        auto j = static_cast<int>(v * image.Height());
+        auto pixel = image.pixelData(i, j);
+
+        auto colourScale = 1.0 / 255.0;
+        return Colour(colourScale * pixel[0], colourScale * pixel[1], colourScale * pixel[2]);
     }
 };
 
