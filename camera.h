@@ -21,6 +21,7 @@ public:
     int imageWidth = 100;     // Rendered image width in pixel count
     int samplesPerPixel = 10; // Count of random samples for each pixel
     int maxDepth = 10;        // Maximum number of ray bounces into scene
+    Colour background;        // Scene background colour
 
     double verticalFOV = 90;            // Vertical view angle (field of view)
     Point3 lookFrom = Point3(0, 0, -1); // Point camera is looking from
@@ -170,18 +171,18 @@ private:
         // If we've exceeded the ray bounce limit, no more light is gathered
         if ( depth <= 0 ) return Colour(0, 0, 0);
 
-        if ( world.Hit(ray, Interval(0.001, INF), record) ) {
-            Ray scattered;
-            Colour attenuation;
-            if ( record.material->Scatter(ray, record, attenuation, scattered) ) {
-                return attenuation * RayColour(scattered, depth - 1, world);
-            }
-            return Colour(0, 0, 0);
-        }
+        // If the ray hits nothing, return the background colour
+        if ( !world.Hit(ray, Interval(0.001, INF), record) ) return background;
 
-        Vec3 unitDirection = UnitVector(ray.Direction());
-        auto a = 0.5 * (unitDirection.Y() + 1.0);
-        return (1.0 - a) * Colour(1.0, 1.0, 1.0) + a * Colour(0.5, 0.7, 1.0);
+        Ray scattered;
+        Colour attenuation;
+        Colour colourFromEmission = record.material->Emitted(record.u, record.v, record.point);
+
+        if ( !record.material->Scatter(ray, record, attenuation, scattered) ) return colourFromEmission;
+
+        Colour colourFromScatter = attenuation * RayColour(scattered, depth - 1, world);
+
+        return colourFromEmission + colourFromScatter;
     }
 };
 

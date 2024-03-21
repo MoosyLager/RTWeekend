@@ -12,6 +12,11 @@ class Material
 public:
     virtual ~Material() = default;
 
+    virtual Colour Emitted(double u, double v, const Point3 &p) const
+    {
+        return Colour(0, 0, 0);
+    }
+
     virtual bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const = 0;
 };
 
@@ -92,6 +97,27 @@ public:
 
         scattered = Ray(record.point, direction, rayIn.Time());
         return true;
+    }
+};
+
+class DiffuseLight : public Material
+{
+private:
+    shared_ptr<Texture> emit;
+
+public:
+    DiffuseLight(shared_ptr<Texture> a) : emit(a) {}
+
+    DiffuseLight(Colour c) : emit(make_shared<SolidColour>(c)) {}
+
+    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const override
+    {
+        return false;
+    }
+
+    Colour Emitted(double u, double v, const Point3 &p) const override
+    {
+        return emit->Value(u, v, p);
     }
 };
 

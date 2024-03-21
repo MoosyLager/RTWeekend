@@ -60,6 +60,7 @@ void FinalRenderBookOne()
     cam.imageWidth = 400;
     cam.samplesPerPixel = 100;
     cam.maxDepth = 10;
+    cam.background = Colour(0.70, 0.80, 1.00);
 
     cam.verticalFOV = 20;
     cam.lookFrom = Point3(13, 2, 3);
@@ -126,6 +127,7 @@ void RandomSpheres()
     cam.imageWidth = 400;
     cam.samplesPerPixel = 100;
     cam.maxDepth = 10;
+    cam.background = Colour(0.70, 0.80, 1.00);
 
     cam.verticalFOV = 20;
     cam.lookFrom = Point3(13, 2, 3);
@@ -153,6 +155,7 @@ void TwoSpheres()
     cam.imageWidth = 400;
     cam.samplesPerPixel = 100;
     cam.maxDepth = 50;
+    cam.background = Colour(0.70, 0.80, 1.00);
 
     cam.verticalFOV = 20;
     cam.lookFrom = Point3(13, 2, 3);
@@ -176,6 +179,7 @@ void Mars()
     cam.imageWidth = 400;
     cam.samplesPerPixel = 100;
     cam.maxDepth = 10;
+    cam.background = Colour(0.70, 0.80, 1.00);
 
     cam.verticalFOV = 20;
     cam.lookFrom = Point3(0, 0, 12);
@@ -201,6 +205,7 @@ void TwoPerlinSpheres()
     cam.imageWidth = 400;
     cam.samplesPerPixel = 100;
     cam.maxDepth = 50;
+    cam.background = Colour(0.70, 0.80, 1.00);
 
     cam.verticalFOV = 20;
     cam.lookFrom = Point3(13, 2, 3);
@@ -238,6 +243,7 @@ void Quads()
     cam.imageWidth = 400;
     cam.samplesPerPixel = 100;
     cam.maxDepth = 10;
+    cam.background = Colour(0.70, 0.80, 1.00);
 
     cam.verticalFOV = 80;
     cam.lookFrom = Point3(0, 0, 9);
