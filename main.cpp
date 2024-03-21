@@ -255,9 +255,41 @@ void Quads()
     cam.Render(world);
 }
 
+void SimpleLight()
+{
+    HitableList world;
+
+    auto perlinTexture = make_shared<NoiseTexture>(4);
+    world.Add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, make_shared<Lambertian>(perlinTexture)));
+    world.Add(make_shared<Sphere>(Point3(0, 2, 0), 2, make_shared<Lambertian>(perlinTexture)));
+
+    auto diffuseLight = make_shared<DiffuseLight>(Colour(4, 4, 4));
+    world.Add(make_shared<Sphere>(Point3(0, 7, 0), 2, diffuseLight));
+    world.Add(make_shared<Quad>(Point3(3, 1, -2), Vec3(2, 0, 0), Vec3(0, 2, 0), diffuseLight));
+
+    world = HitableList(make_shared<BVHNode>(world));
+
+    Camera cam;
+
+    cam.aspectRatio = 16.0 / 9.0;
+    cam.imageWidth = 400;
+    cam.samplesPerPixel = 100;
+    cam.maxDepth = 50;
+    cam.background = Colour(0, 0, 0);
+
+    cam.verticalFOV = 20;
+    cam.lookFrom = Point3(26, 3, 6);
+    cam.lookAt = Point3(0, 2, 0);
+    cam.vecUp = Vec3(0, 1, 0);
+
+    cam.defocusAngle = 0;
+
+    cam.Render(world);
+}
+
 int main()
 {
-    switch ( 6 ) {
+    switch ( 7 ) {
         case 1:
             FinalRenderBookOne();
             break;
@@ -275,6 +307,9 @@ int main()
             break;
         case 6:
             Quads();
+            break;
+        case 7:
+            SimpleLight();
             break;
     }
     return 0;
