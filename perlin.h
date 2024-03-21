@@ -112,6 +112,20 @@ public:
         }
         return PerlinInterpolation(c, u, v, w);
     }
+
+    double Turbulence(const Point3& p, int depth = 7) const
+    {
+        auto accumulation = 0.0;
+        auto tempPoint = p;
+        auto weight = 1.0;
+
+        for ( int i = 0; i < depth; i++ ) {
+            accumulation += weight * Noise(tempPoint);
+            weight *= 0.5;
+            tempPoint *= 2;
+        }
+        return fabs(accumulation);
+    }
 };
 
 #endif
