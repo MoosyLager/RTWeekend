@@ -190,7 +190,7 @@ void TwoPerlinSpheres()
 {
     HitableList world;
 
-    auto perlinTexture = make_shared<NoiseTexture>();
+    auto perlinTexture = make_shared<NoiseTexture>(4);
     world.Add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, make_shared<Lambertian>(perlinTexture)));
     world.Add(make_shared<Sphere>(Point3(0, 2, 0), 2, make_shared<Lambertian>(perlinTexture)));
 
