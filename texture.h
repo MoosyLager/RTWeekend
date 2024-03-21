@@ -98,7 +98,7 @@ public:
     Colour Value(double u, double v, const Point3 &p) const override
     {
         auto s = scale * p;
-        return Colour(1, 1, 1) * noise.Turbulence(s);
+        return Colour(1, 1, 1) * 0.5 * (1 + sin(s.Z() + 10 * noise.Turbulence(s)));
     }
 };
 
