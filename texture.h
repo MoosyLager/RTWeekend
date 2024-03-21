@@ -97,7 +97,7 @@ public:
 
     Colour Value(double u, double v, const Point3 &p) const override
     {
-        return Colour(1, 1, 1) * noise.Noise(scale * p);
+        return Colour(1, 1, 1) * 0.5 * (1.0 + noise.Noise(scale * p));
     }
 };
 
