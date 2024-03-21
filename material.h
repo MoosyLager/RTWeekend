@@ -3,6 +3,8 @@
 
 #include "rtweekend.h"
 
+#include "texture.h"
+
 class HitRecord;
 
 class Material
@@ -16,10 +18,12 @@ public:
 class Lambertian : public Material
 {
 private:
-    Colour albedo;
+    shared_ptr<Texture> albedo;
 
 public:
-    Lambertian(const Colour &a) : albedo(a) {}
+    Lambertian(const Colour &a) : albedo(make_shared<SolidColour>(a)) {}
+
+    Lambertian(shared_ptr<Texture> a) : albedo(a) {}
 
     bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const override
     {
@@ -29,7 +33,7 @@ public:
         if ( scatterDirection.NearZero() ) scatterDirection = record.normal;
 
         scattered = Ray(record.point, scatterDirection, rayIn.Time());
-        attenuation = albedo;
+        attenuation = albedo->Value(record.u, record.v, record.point);
         return true;
     }
 };
@@ -46,7 +50,7 @@ public:
     bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const override
     {
         Vec3 reflected = Reflect(rayIn.Direction(), record.normal);
-        scattered = Ray(record.point, reflected + fuzz * RandomUnitVector(), rayIn.Time());
+        scattered = Ray(record.point, reflected + fuzz * RandomInUnitSphere(), rayIn.Time());
         attenuation = albedo;
         return (Dot(scattered.Direction(), record.normal) > 0);
     }

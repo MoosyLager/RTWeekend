@@ -6,6 +6,7 @@
         "execution": "cpp",
         "chrono": "cpp",
         "ostream": "cpp",
-        "memory": "cpp"
+        "memory": "cpp",
+        "xstring": "cpp"
     }
 }

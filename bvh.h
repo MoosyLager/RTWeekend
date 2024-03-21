@@ -1,6 +1,8 @@
 #ifndef BVH_H
 #define BVH_H
 
+#include <algorithm>
+
 #include "rtweekend.h"
 
 #include "hitable.h"
