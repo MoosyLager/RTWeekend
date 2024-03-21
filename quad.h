@@ -14,6 +14,7 @@ private:
     AABB boundingBox;
     Vec3 normal;
     double D;
+    Vec3 w;
 
 public:
     Quad(const Point3 &_Q, const Vec3 &_u, const Vec3 &_v, shared_ptr<Material> _material)
@@ -22,6 +23,7 @@ public:
         auto n = Cross(u, v);
         normal = UnitVector(n);
         D = Dot(normal, Q);
+        w = n / Dot(n, n);
 
         SetBoundingBox();
     }
