@@ -1,9 +1,10 @@
 #ifndef QUAD_H
 #define QUAD_H
 
-#include "rtweekend.h"
+#include <cmath>
 
 #include "hitable.h"
+#include "rtweekend.h"
 
 class Quad : public Hitable
 {
@@ -46,13 +47,32 @@ public:
         auto t = (D - Dot(normal, ray.Origin())) / denominator;
         if ( !rayT.Contains(t) ) return false;
 
+        // Determine the hit point lies within the planar shape using its plane coordinates
         auto intersection = ray.At(t);
+        Vec3 planarHitpointVector = intersection - Q;
+        auto alpha = Dot(w, Cross(planarHitpointVector, v));
+        auto beta = Dot(w, Cross(u, planarHitpointVector));
 
+        if ( !isInterior(alpha, beta, record) ) return false;
+
+        // Ray hits the 2D shape; set the rest of the hit record and return true
         record.t = t;
         record.point = intersection;
         record.material = material;
         record.SetFaceNormal(ray, normal);
 
+        return true;
+    }
+
+    virtual bool isInterior(double a, double b, HitRecord &record) const
+    {
+        // Given the hit point in plane coordinates, return false if it is outside the
+        // primitive, otherwise set the hit record UV coordinates and return true
+
+        if ( (a < 0) || (1 < a) || (b < 0) || (1 < b) ) return false;
+
+        record.u = a;
+        record.v = b;
         return true;
     }
 };
