@@ -54,6 +54,17 @@ public:
         }
         return true;
     }
+
+    AABB Pad()
+    {
+        // Return an AABB that has no side narrower than some delta, padding if necessary
+        double delta = 0.0001;
+        Interval newX = (x.Size() >= delta) ? x : x.Expand(delta);
+        Interval newY = (y.Size() >= delta) ? y : y.Expand(delta);
+        Interval newZ = (z.Size() >= delta) ? z : z.Expand(delta);
+
+        return AABB(newX, newY, newZ);
+    }
 };
 
 #endif
