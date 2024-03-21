@@ -1,6 +1,7 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+#include "perlin.h"
 #include "rtweekend.h"
 #include "stbImplementation.h"
 
@@ -80,6 +81,20 @@ public:
 
         auto colourScale = 1.0 / 255.0;
         return Colour(colourScale * pixel[0], colourScale * pixel[1], colourScale * pixel[2]);
+    }
+};
+
+class NoiseTexture : public Texture
+{
+private:
+    Perlin noise;
+
+public:
+    NoiseTexture() {}
+
+    Colour Value(double u, double v, const Point3 &p) const override
+    {
+        return Colour(1, 1, 1) * noise.Noise(p);
     }
 };
 

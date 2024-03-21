@@ -186,9 +186,34 @@ void Mars()
     cam.Render(HitableList(planet));
 }
 
+void TwoPerlinSpheres()
+{
+    HitableList world;
+
+    auto perlinTexture = make_shared<NoiseTexture>();
+    world.Add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, make_shared<Lambertian>(perlinTexture)));
+    world.Add(make_shared<Sphere>(Point3(0, 2, 0), 2, make_shared<Lambertian>(perlinTexture)));
+
+    Camera cam;
+
+    cam.aspectRatio = 16.0 / 9.0;
+    cam.imageWidth = 400;
+    cam.samplesPerPixel = 100;
+    cam.maxDepth = 50;
+
+    cam.verticalFOV = 20;
+    cam.lookFrom = Point3(13, 2, 3);
+    cam.lookAt = Point3(0, 0, 0);
+    cam.vecUp = Vec3(0, 1, 0);
+
+    cam.defocusAngle = 0;
+
+    cam.Render(world);
+}
+
 int main()
 {
-    switch ( 4 ) {
+    switch ( 5 ) {
         case 1:
             FinalRenderBookOne();
             break;
@@ -200,6 +225,9 @@ int main()
             break;
         case 4:
             Mars();
+            break;
+        case 5:
+            TwoPerlinSpheres();
             break;
     }
     return 0;
