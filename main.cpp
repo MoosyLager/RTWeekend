@@ -287,9 +287,48 @@ void SimpleLight()
     cam.Render(world);
 }
 
+void CornellBox()
+{
+    HitableList world;
+
+    auto red = make_shared<Lambertian>(Colour(.65, .05, .05));
+    auto white = make_shared<Lambertian>(Colour(.73, .73, .73));
+    auto green = make_shared<Lambertian>(Colour(.12, .45, .15));
+    auto light = make_shared<DiffuseLight>(Colour(15, 15, 15));
+
+    world.Add(make_shared<Quad>(Point3(555, 0, 0), Vec3(0, 555, 0), Vec3(0, 0, 555), green));
+    world.Add(make_shared<Quad>(Point3(0, 0, 0), Vec3(0, 555, 0), Vec3(0, 0, 555), red));
+    world.Add(make_shared<Quad>(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), light));
+    world.Add(make_shared<Quad>(Point3(0, 0, 0), Vec3(555, 0, 0), Vec3(0, 0, 555), white));
+    world.Add(make_shared<Quad>(Point3(555, 555, 555), Vec3(-555, 0, 0), Vec3(0, 0, -555), white));
+    world.Add(make_shared<Quad>(Point3(0, 0, 555), Vec3(555, 0, 0), Vec3(0, 555, 0), white));
+
+    world.Add(Box(Point3(130, 0, 65), Point3(295, 165, 230), white));
+    world.Add(Box(Point3(265, 0, 295), Point3(430, 330, 460), white));
+
+    world = HitableList(make_shared<BVHNode>(world));
+
+    Camera cam;
+
+    cam.aspectRatio = 1.0;
+    cam.imageWidth = 600;
+    cam.samplesPerPixel = 200;
+    cam.maxDepth = 50;
+    cam.background = Colour(0, 0, 0);
+
+    cam.verticalFOV = 40;
+    cam.lookFrom = Point3(278, 278, -800);
+    cam.lookAt = Point3(278, 278, 0);
+    cam.vecUp = Vec3(0, 1, 0);
+
+    cam.defocusAngle = 0;
+
+    cam.Render(world);
+}
+
 int main()
 {
-    switch ( 7 ) {
+    switch ( 8 ) {
         case 1:
             FinalRenderBookOne();
             break;
@@ -310,6 +349,9 @@ int main()
             break;
         case 7:
             SimpleLight();
+            break;
+        case 8:
+            CornellBox();
             break;
     }
     return 0;
