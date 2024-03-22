@@ -379,9 +379,86 @@ void CornellSmoke()
     cam.Render(world);
 }
 
+void FinalRenderBookTwo(int image_width, int samples_per_pixel, int max_depth)
+{
+    HitableList boxes1;
+    auto ground = make_shared<Lambertian>(Colour(0.48, 0.83, 0.53));
+
+    int boxesPerSide = 20;
+    for ( int i = 0; i < boxesPerSide; i++ ) {
+        for ( int j = 0; j < boxesPerSide; j++ ) {
+            auto w = 100.0;
+            auto x0 = -1000.0 + i * w;
+            auto z0 = -1000.0 + j * w;
+            auto y0 = 0.0;
+            auto x1 = x0 + w;
+            auto y1 = RandomDouble(1, 101);
+            auto z1 = z0 + w;
+
+            boxes1.Add(Box(Point3(x0, y0, z0), Point3(x1, y1, z1), ground));
+        }
+    }
+
+    HitableList world;
+
+    world.Add(make_shared<BVHNode>(boxes1));
+
+    auto light = make_shared<DiffuseLight>(Colour(7, 7, 7));
+    world.Add(make_shared<Quad>(Point3(123, 554, 147), Vec3(300, 0, 0), Vec3(0, 0, 265), light));
+
+    auto center1 = Point3(400, 400, 200);
+    auto center2 = center1 + Vec3(30, 0, 0);
+    auto sphereMaterial = make_shared<Lambertian>(Colour(0.7, 0.3, 0.1));
+    world.Add(make_shared<Sphere>(center1, center2, 50, sphereMaterial));
+
+    world.Add(make_shared<Sphere>(Point3(260, 150, 45), 50, make_shared<Dielectric>(1.5)));
+    world.Add(make_shared<Sphere>(
+        Point3(0, 150, 145), 50, make_shared<Metal>(Colour(0.8, 0.8, 0.9), 1.0)));
+
+    auto boundary = make_shared<Sphere>(Point3(360, 150, 145), 70, make_shared<Dielectric>(1.5));
+    world.Add(boundary);
+    world.Add(make_shared<ConstantMedium>(boundary, 0.2, Colour(0.2, 0.4, 0.9)));
+    boundary = make_shared<Sphere>(Point3(0, 0, 0), 5000, make_shared<Dielectric>(1.5));
+    world.Add(make_shared<ConstantMedium>(boundary, .0001, Colour(1, 1, 1)));
+
+    auto marsMaterial = make_shared<Lambertian>(make_shared<ImageTexture>("mars.jpg"));
+    world.Add(make_shared<Sphere>(Point3(400, 200, 400), 100, marsMaterial));
+    auto perlinTexture = make_shared<NoiseTexture>(0.1);
+    world.Add(make_shared<Sphere>(Point3(220, 280, 300), 80, make_shared<Lambertian>(perlinTexture)));
+
+    HitableList boxes2;
+    auto white = make_shared<Lambertian>(Colour(.73, .73, .73));
+    int numSpheres = 1000;
+    for ( int j = 0; j < numSpheres; j++ ) {
+        boxes2.Add(make_shared<Sphere>(Point3::Random(0, 165), 10, white));
+    }
+
+    world.Add(make_shared<Translate>(
+        make_shared<RotateY>(
+            make_shared<BVHNode>(boxes2), 15),
+        Vec3(-100, 270, 395)));
+
+    Camera cam;
+
+    cam.aspectRatio = 1.0;
+    cam.imageWidth = image_width;
+    cam.samplesPerPixel = samples_per_pixel;
+    cam.maxDepth = max_depth;
+    cam.background = Colour(0, 0, 0);
+
+    cam.verticalFOV = 40;
+    cam.lookFrom = Point3(478, 278, -600);
+    cam.lookAt = Point3(278, 278, 0);
+    cam.vecUp = Vec3(0, 1, 0);
+
+    cam.defocusAngle = 0;
+
+    cam.Render(world);
+}
+
 int main()
 {
-    switch ( 9 ) {
+    switch ( 11 ) {
         case 1:
             FinalRenderBookOne();
             break;
@@ -408,6 +485,12 @@ int main()
             break;
         case 9:
             CornellSmoke();
+            break;
+        case 10:
+            FinalRenderBookTwo(800, 10000, 40);
+            break;
+        case 11:
+            FinalRenderBookTwo(400, 250, 4);
             break;
     }
     return 0;
