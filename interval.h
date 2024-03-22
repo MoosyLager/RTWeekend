@@ -47,4 +47,14 @@ public:
 const static Interval EMPTY(+INF, -INF);
 const static Interval UNIVERSE(-INF, +INF);
 
+Interval operator+(const Interval &ival, double displacement)
+{
+    return Interval(ival.min + displacement, ival.max + displacement);
+}
+
+Interval operator+(double displacement, const Interval &ival)
+{
+    return ival + displacement;
+}
+
 #endif

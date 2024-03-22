@@ -37,4 +37,35 @@ public:
     virtual AABB BoundingBox() const = 0;
 };
 
+class Translate : public Hitable
+{
+private:
+    shared_ptr<Hitable> object;
+    Vec3 offset;
+    AABB boundingBox;
+
+public:
+    Translate(shared_ptr<Hitable> p, const Vec3 &displacement)
+        : object(p), offset(displacement)
+    {
+        boundingBox = object->BoundingBox() + offset;
+    }
+
+    bool Hit(const Ray &ray, Interval rayT, HitRecord &record) const override
+    {
+        // Move ray backwards by the offset
+        Ray offsetRay(ray.Origin() - offset, ray.Direction(), ray.Time());
+
+        // Determine where (if any) an intersection occurs along the offset ray
+        if ( !object->Hit(offsetRay, rayT, record) ) return false;
+
+        // Move the intersection point forwards by the offset
+        record.point += offset;
+
+        return true;
+    }
+
+    AABB BoundingBox() const override { return boundingBox; }
+};
+
 #endif

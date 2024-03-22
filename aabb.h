@@ -67,4 +67,14 @@ public:
     }
 };
 
+AABB operator+(const AABB &boundingBox, const Vec3 &offset)
+{
+    return AABB(boundingBox.x + offset.X(), boundingBox.y + offset.Y(), boundingBox.z + offset.Z());
+}
+
+AABB operator+(const Vec3 &offset, const AABB &boundingBox)
+{
+    return boundingBox + offset;
+}
+
 #endif
