@@ -172,7 +172,7 @@ private:
         if ( depth <= 0 ) return Colour(0, 0, 0);
 
         // If the ray hits nothing, return the background colour
-        if ( !world.Hit(ray, Interval(0.001, INF), record) ) return background;
+        if ( !world.Hit(ray, Interval(0.001, infinity), record) ) return background;
 
         Ray scattered;
         Colour attenuation;

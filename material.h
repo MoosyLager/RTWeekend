@@ -121,4 +121,22 @@ public:
     }
 };
 
+class Isotropic : public Material
+{
+private:
+    shared_ptr<Texture> albedo;
+
+public:
+    Isotropic(Colour c) : albedo(make_shared<SolidColour>(c)) {}
+
+    Isotropic(shared_ptr<Texture> a) : albedo(a) {}
+
+    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const override
+    {
+        scattered = Ray(record.point, RandomUnitVector(), rayIn.Time());
+        attenuation = albedo->Value(record.u, record.v, record.point);
+        return true;
+    }
+};
+
 #endif
