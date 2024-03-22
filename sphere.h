@@ -31,10 +31,10 @@ private:
         //     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
 
         auto theta = acos(-p.Y());
-        auto phi = atan2(-p.Z(), p.X()) + pi;
+        auto phi = atan2(-p.Z(), p.X()) + PI;
 
-        u = phi / (2 * pi);
-        v = theta / pi;
+        u = phi / (2 * PI);
+        v = theta / PI;
     }
 
 public:

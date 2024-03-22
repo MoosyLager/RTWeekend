@@ -29,9 +29,9 @@ public:
 
         HitRecord record1, record2;
 
-        if ( !boundary->Hit(ray, Interval::UNIVERSE, record1) ) return false;
+        if ( !boundary->Hit(ray, Interval(-maxDouble, +maxDouble), record1) ) return false;
 
-        if ( !boundary->Hit(ray, Interval(record1.t + 0.0001, infinity), record2) ) return false;
+        if ( !boundary->Hit(ray, Interval(record1.t + 0.0001, maxDouble), record2) ) return false;
 
         if ( debugging ) std::clog << "\nrayTMin=" << record1.t << ", rayTMax=" << record2.t << '\n';
 

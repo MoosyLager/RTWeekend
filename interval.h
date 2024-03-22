@@ -6,7 +6,7 @@ class Interval
 public:
     double min, max;
 
-    Interval() : min(+infinity), max(-infinity) {} // Default interval is empty
+    Interval() : min(+maxDouble), max(-maxDouble) {} // Default interval is empty
 
     Interval(double _min, double _max) : min(_min), max(_max) {}
 
@@ -41,11 +41,11 @@ public:
         return Interval(min - padding, max + padding);
     }
 
-    static const Interval EMPTY, UNIVERSE;
+    // static const Interval empty, universe;
 };
 
-const static Interval EMPTY(+infinity, -infinity);
-const static Interval UNIVERSE(-infinity, +infinity);
+// static const Interval empty(+maxDouble, -maxDouble);
+// static const Interval universe(-maxDouble, +maxDouble);
 
 Interval operator+(const Interval &ival, double displacement)
 {

@@ -84,8 +84,8 @@ public:
         cosTheta = cos(radians);
         boundingBox = object->BoundingBox();
 
-        Point3 min(infinity, infinity, infinity);
-        Point3 max(-infinity, -infinity, -infinity);
+        Point3 min(maxDouble, maxDouble, maxDouble);
+        Point3 max(-maxDouble, -maxDouble, -maxDouble);
 
         for ( int i = 0; i < 2; i++ ) {
             for ( int j = 0; j < 2; j++ ) {
