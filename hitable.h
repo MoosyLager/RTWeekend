@@ -68,4 +68,83 @@ public:
     AABB BoundingBox() const override { return boundingBox; }
 };
 
+class RotateY : public Hitable
+{
+private:
+    shared_ptr<Hitable> object;
+    double sinTheta;
+    double cosTheta;
+    AABB boundingBox;
+
+public:
+    RotateY(shared_ptr<Hitable> p, double angle) : object(p)
+    {
+        auto radians = DegreesTooRadians(angle);
+        sinTheta = sin(radians);
+        cosTheta = cos(radians);
+        boundingBox = object->BoundingBox();
+
+        Point3 min(INF, INF, INF);
+        Point3 max(-INF, -INF, -INF);
+
+        for ( int i = 0; i < 2; i++ ) {
+            for ( int j = 0; j < 2; j++ ) {
+                for ( int k = 0; k < 2; k++ ) {
+                    auto x = i * boundingBox.x.max + (1 - i) * boundingBox.x.min;
+                    auto y = j * boundingBox.y.max + (1 - j) * boundingBox.y.min;
+                    auto z = k * boundingBox.z.max + (1 - k) * boundingBox.z.min;
+
+                    auto newX = cosTheta * x + sinTheta * z;
+                    auto newZ = -sinTheta * x + cosTheta * z;
+
+                    Vec3 tester(newX, y, newZ);
+
+                    for ( int c = 0; c < 3; c++ ) {
+                        min[c] = fmin(min[c], tester[c]);
+                        max[c] = fmax(max[c], tester[c]);
+                    }
+                }
+            }
+        }
+
+        boundingBox = AABB(min, max);
+    }
+
+    bool Hit(const Ray &ray, Interval ray_t, HitRecord &rec) const override
+    {
+        // Change the ray from world space to object space
+        auto origin = ray.Origin();
+        auto direction = ray.Direction();
+
+        origin[0] = cosTheta * ray.Origin()[0] - sinTheta * ray.Origin()[2];
+        origin[2] = sinTheta * ray.Origin()[0] + cosTheta * ray.Origin()[2];
+
+        direction[0] = cosTheta * ray.Direction()[0] - sinTheta * ray.Direction()[2];
+        direction[2] = sinTheta * ray.Direction()[0] + cosTheta * ray.Direction()[2];
+
+        Ray rotatedRay(origin, direction, ray.Time());
+
+        // Determine where (if any) an intersection occurs in object space
+        if ( !object->Hit(rotatedRay, ray_t, rec) )
+            return false;
+
+        // Change the intersection point from object space to world space
+        auto point = rec.point;
+        point[0] = cosTheta * rec.point[0] + sinTheta * rec.point[2];
+        point[2] = -sinTheta * rec.point[0] + cosTheta * rec.point[2];
+
+        // Change the normal from object space to world space
+        auto normal = rec.normal;
+        normal[0] = cosTheta * rec.normal[0] + sinTheta * rec.normal[2];
+        normal[2] = -sinTheta * rec.normal[0] + cosTheta * rec.normal[2];
+
+        rec.point = point;
+        rec.normal = normal;
+
+        return true;
+    }
+
+    AABB BoundingBox() const override { return boundingBox; }
+};
+
 #endif

@@ -303,8 +303,15 @@ void CornellBox()
     world.Add(make_shared<Quad>(Point3(555, 555, 555), Vec3(-555, 0, 0), Vec3(0, 0, -555), white));
     world.Add(make_shared<Quad>(Point3(0, 0, 555), Vec3(555, 0, 0), Vec3(0, 555, 0), white));
 
-    world.Add(Box(Point3(130, 0, 65), Point3(295, 165, 230), white));
-    world.Add(Box(Point3(265, 0, 295), Point3(430, 330, 460), white));
+    shared_ptr<Hitable> box1 = Box(Point3(0, 0, 0), Point3(165, 330, 165), white);
+    box1 = make_shared<RotateY>(box1, 15);
+    box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
+    world.Add(box1);
+
+    shared_ptr<Hitable> box2 = Box(Point3(0, 0, 0), Point3(165, 165, 165), white);
+    box2 = make_shared<RotateY>(box2, -18);
+    box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
+    world.Add(box2);
 
     world = HitableList(make_shared<BVHNode>(world));
 
