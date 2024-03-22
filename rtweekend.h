@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <limits>
 #include <memory>
-#include <random>
 
 // Usings
 using std::make_shared;
@@ -24,9 +23,8 @@ inline double DegreesTooRadians(double degrees)
 
 inline double RandomDouble()
 {
-    static thread_local std::mt19937 generator;
-    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-    return distribution(generator);
+    // Returns a random real in [0,1)
+    return rand() / (RAND_MAX + 1.0);
 }
 
 inline double RandomDouble(double min, double max)

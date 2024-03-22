@@ -423,7 +423,7 @@ void FinalRenderBookTwo(int image_width, int samples_per_pixel, int max_depth)
 
     auto marsMaterial = make_shared<Lambertian>(make_shared<ImageTexture>("mars.jpg"));
     world.Add(make_shared<Sphere>(Point3(400, 200, 400), 100, marsMaterial));
-    auto perlinTexture = make_shared<NoiseTexture>(0.1);
+    auto perlinTexture = make_shared<NoiseTexture>(10);
     world.Add(make_shared<Sphere>(Point3(220, 280, 300), 80, make_shared<Lambertian>(perlinTexture)));
 
     HitableList boxes2;
