@@ -36,17 +36,6 @@ public:
         return x;
     }
 
-    int MaxAxes() const
-    {
-        double xSize = x.Size();
-        double ySize = y.Size();
-        double zSize = z.Size();
-
-        if ( xSize >= ySize && xSize >= zSize ) return 0;
-        if ( ySize >= xSize && ySize >= zSize ) return 1;
-        return 2;
-    }
-
     bool Hit(const Ray &ray, Interval rayT) const
     {
         for ( int a = 0; a < 3; a++ ) {
@@ -76,6 +65,14 @@ public:
 
         return AABB(newX, newY, newZ);
     }
+
+    double SurfaceArea() const
+    {
+        double xSize = x.Size();
+        double ySize = y.Size();
+        double zSize = z.Size();
+        return 2 * (xSize * ySize + ySize * zSize + zSize * xSize);
+    }
 };
 
 AABB operator+(const AABB &boundingBox, const Vec3 &offset)
@@ -86,18 +83,6 @@ AABB operator+(const AABB &boundingBox, const Vec3 &offset)
 AABB operator+(const Vec3 &offset, const AABB &boundingBox)
 {
     return boundingBox + offset;
-}
-
-AABB SurroundingBox(const AABB &box0, const AABB &box1)
-{
-    Interval x(fmin(box0.x.min, box1.x.min), fmax(box0.x.max, box1.x.max));
-    Interval y(fmin(box0.y.min, box1.y.min), fmax(box0.y.max, box1.y.max));
-    Interval z(fmin(box0.z.min, box1.z.min), fmax(box0.z.max, box1.z.max));
-    return AABB(x, y, z);
-}
-
-AABB SurroundingBox(const AABB &box, const Point3 &p)
-{
 }
 
 #endif

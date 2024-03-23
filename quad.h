@@ -104,8 +104,7 @@ public:
 //     shared_ptr<HitableList> Sides() const { return sides; }
 // };
 
-inline shared_ptr<HitableList>
-Box(const Point3 &a, const Point3 &b, shared_ptr<Material> material)
+inline shared_ptr<HitableList> Box(const Point3 &a, const Point3 &b, shared_ptr<Material> material)
 {
     // Returns the 3D box (six sides) that contains the top opposite vertices a & b.
 

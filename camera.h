@@ -1,6 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <chrono>
 #include <execution>
 #include <filesystem>
 #include <iostream>
@@ -35,6 +36,8 @@ public:
     {
         Initialise();
 
+        auto startTime = std::chrono::high_resolution_clock::now();
+
         int scanlinesRemaining = imageHeight;
         std::for_each(std::execution::par, verticalImageIter.begin(), verticalImageIter.end(), [this, &world, &scanlinesRemaining](int j) {
             std::clog << "\rScanlines remaining: " << scanlinesRemaining-- << " " << std::flush;
@@ -49,8 +52,11 @@ public:
             });
         });
 
+        auto endTime = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsedTime(endTime - startTime);
+
         // Save Image
-        std::string path = "C:/Users/shena/Documents/Random Programming Things/Raytracing In One Weekend Series/Images/Book 2/";
+        std::string path = "../../Images/Book 2/";
         auto dirIter = std::filesystem::directory_iterator(path.c_str());
         int fileCount = 0;
         for ( auto &entry : dirIter ) {
@@ -63,7 +69,10 @@ public:
         stbi_write_png(filename.c_str(), imageWidth, imageHeight, imageComponents, image, imageWidth * imageComponents);
         STBI_FREE(image);
 
-        std::clog << "\rDone.                 \n";
+        std::clog << "\rDone.                 \n"
+                  << std::flush;
+
+        std::clog << "\rRender Time: " << elapsedTime << " " << std::flush;
     }
 
 private:

@@ -55,6 +55,8 @@ void FinalRenderBookOne()
     auto material3 = make_shared<Metal>(Colour(0.7, 0.6, 0.5), 0.0);
     world.Add(make_shared<Sphere>(Point3(4, 1, 0), 1.0, material3));
 
+    world = HitableList(make_shared<BVHNode>(world));
+
     Camera cam;
 
     cam.aspectRatio = 16.0 / 9.0;
@@ -150,6 +152,8 @@ void TwoSpheres()
     world.Add(make_shared<Sphere>(Point3(0, -10, 0), 10, make_shared<Lambertian>(checkerTexture)));
     world.Add(make_shared<Sphere>(Point3(0, 10, 0), 10, make_shared<Lambertian>(checkerTexture)));
 
+    world = HitableList(make_shared<BVHNode>(world));
+
     Camera cam;
 
     cam.aspectRatio = 16.0 / 9.0;
@@ -199,6 +203,8 @@ void TwoPerlinSpheres()
     auto perlinTexture = make_shared<NoiseTexture>(4);
     world.Add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, make_shared<Lambertian>(perlinTexture)));
     world.Add(make_shared<Sphere>(Point3(0, 2, 0), 2, make_shared<Lambertian>(perlinTexture)));
+
+    world = HitableList(make_shared<BVHNode>(world));
 
     Camera cam;
 
@@ -361,6 +367,8 @@ void CornellSmoke()
     world.Add(make_shared<ConstantMedium>(box1, 0.01, Colour(0, 0, 0)));
     world.Add(make_shared<ConstantMedium>(box2, 0.01, Colour(1, 1, 1)));
 
+    world = HitableList(make_shared<BVHNode>(world));
+
     Camera cam;
 
     cam.aspectRatio = 1.0;
@@ -438,6 +446,8 @@ void FinalRenderBookTwo(int image_width, int samples_per_pixel, int max_depth)
             make_shared<BVHNode>(boxes2), 15),
         Vec3(-100, 270, 395)));
 
+    world = HitableList(make_shared<BVHNode>(world));
+
     Camera cam;
 
     cam.aspectRatio = 1.0;
@@ -458,7 +468,7 @@ void FinalRenderBookTwo(int image_width, int samples_per_pixel, int max_depth)
 
 int main()
 {
-    switch ( 11 ) {
+    switch ( 10 ) {
         case 1:
             FinalRenderBookOne();
             break;
@@ -487,10 +497,10 @@ int main()
             CornellSmoke();
             break;
         case 10:
-            FinalRenderBookTwo(800, 10000, 40);
+            FinalRenderBookTwo(800, 10000, 40); // For final high resolution render
             break;
         case 11:
-            FinalRenderBookTwo(400, 250, 4);
+            FinalRenderBookTwo(400, 250, 4); // For testing
             break;
     }
     return 0;
