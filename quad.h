@@ -78,6 +78,32 @@ public:
     }
 };
 
+// class Box : public Hitable
+// {
+// public:
+//     shared_ptr<HitableList> sides;
+
+//     Box(const Point3 &a, const Point3 &b, shared_ptr<Material> material)
+//     {
+//         // Construct the two opposite verticles with the minimum and maximum coordinates.
+//         auto min = Point3(fmin(a.X(), b.X()), fmin(a.Y(), b.Y()), fmin(a.Z(), b.Z()));
+//         auto max = Point3(fmax(a.X(), b.X()), fmax(a.Y(), b.Y()), fmax(a.Z(), b.Z()));
+
+//         auto dx = Vec3(max.X() - min.X(), 0, 0);
+//         auto dy = Vec3(0, max.Y() - min.Y(), 0);
+//         auto dz = Vec3(0, 0, max.Z() - min.Z());
+
+//         sides->Add(make_shared<Quad>(Point3(min.X(), min.Y(), max.Z()), dx, dy, material));  // front
+//         sides->Add(make_shared<Quad>(Point3(max.X(), min.Y(), max.Z()), -dz, dy, material)); // right
+//         sides->Add(make_shared<Quad>(Point3(max.X(), min.Y(), min.Z()), -dx, dy, material)); // back
+//         sides->Add(make_shared<Quad>(Point3(min.X(), min.Y(), min.Z()), dz, dy, material));  // left
+//         sides->Add(make_shared<Quad>(Point3(min.X(), max.Y(), max.Z()), dx, -dz, material)); // top
+//         sides->Add(make_shared<Quad>(Point3(min.X(), min.Y(), min.Z()), dx, dz, material));  // bottom
+//     }
+
+//     shared_ptr<HitableList> Sides() const { return sides; }
+// };
+
 inline shared_ptr<HitableList> Box(const Point3 &a, const Point3 &b, shared_ptr<Material> material)
 {
     // Returns the 3D box (six sides) that contains the top opposite vertices a & b.

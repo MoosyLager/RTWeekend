@@ -65,6 +65,14 @@ public:
 
         return AABB(newX, newY, newZ);
     }
+
+    double SurfaceArea() const
+    {
+        double xSize = x.Size();
+        double ySize = y.Size();
+        double zSize = z.Size();
+        return 2 * (xSize * ySize + ySize * zSize + zSize * xSize);
+    }
 };
 
 AABB operator+(const AABB &boundingBox, const Vec3 &offset)
