@@ -399,4 +399,5 @@ FodyWeavers.xsd
 *.sln.iml
 
 ####################################################################
+# Visual Studio Code
 .vscode/*
