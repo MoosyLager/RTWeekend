@@ -56,7 +56,7 @@ public:
         std::chrono::duration<double> elapsedTime(endTime - startTime);
 
         // Save Image
-        std::string path = "../../Images/Book 2/";
+        std::string path = "../../Images/Book 3/";
         auto dirIter = std::filesystem::directory_iterator(path.c_str());
         int fileCount = 0;
         for ( auto &entry : dirIter ) {
