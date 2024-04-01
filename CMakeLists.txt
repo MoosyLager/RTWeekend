@@ -7,5 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_executable(RTWeekend main.cpp)
 
+add_executable(PI pi.cpp)
+
 target_include_directories(RTWeekend PUBLIC
                            "$(PROJECT_BINARY_DIR)")
