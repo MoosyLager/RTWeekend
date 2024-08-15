@@ -468,7 +468,7 @@ void FinalRenderBookTwo(int image_width, int samples_per_pixel, int max_depth)
 
 int main()
 {
-    switch ( 10 ) {
+    switch ( 8 ) {
         case 1:
             FinalRenderBookOne();
             break;

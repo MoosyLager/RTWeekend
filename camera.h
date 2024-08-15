@@ -43,9 +43,11 @@ public:
             std::clog << "\rScanlines remaining: " << scanlinesRemaining-- << " " << std::flush;
             std::for_each(std::execution::par, horizontalImageIter.begin(), horizontalImageIter.end(), [this, j, &world](int i) {
                 Colour pixelColour(0, 0, 0);
-                std::for_each(std::execution::par, samplesIter.begin(), samplesIter.end(), [this, j, i, &world, &pixelColour](int s) {
-                    Ray ray = GetRay(i, j);
-                    pixelColour += RayColour(ray, maxDepth, world);
+                std::for_each(std::execution::par, sqrtSamplesIter.begin(), sqrtSamplesIter.end(), [this, j, i, &world, &pixelColour](int s_j) {
+                    std::for_each(std::execution::par, sqrtSamplesIter.begin(), sqrtSamplesIter.end(), [this, j, i, &world, &pixelColour, s_j](int s_i) {
+                        Ray ray = GetRay(i, j, s_i, s_j);
+                        pixelColour += RayColour(ray, maxDepth, world);
+                    });
                 });
                 int pixelIndex = 3 * (j * imageWidth + i);
                 WriteColour(image, pixelIndex, pixelColour, samplesPerPixel);
@@ -76,14 +78,16 @@ public:
     }
 
 private:
-    int imageHeight;     // Rendered image height
-    Point3 centre;       // Camera center
-    Point3 pixelZeroLoc; // Location of pixel 0, 0
-    Vec3 pixelDeltaU;    // Offset to pixel to the right
-    Vec3 pixelDeltaV;    // Offset to pixel below
-    Vec3 u, v, w;        // Camera frame basis vectors
-    Vec3 defocusDiskU;   // Defocus disk horizontal radius
-    Vec3 defocusDiskV;   // Defocus disk vertical radius
+    int imageHeight;                      // Rendered image height
+    int sqrtSamplesPerPixel;              // Square root for a sum of pixel samples
+    double reciprocalSqrtSamplesPerPixel; // 1 / sqrtSamplesPerPixel
+    Point3 centre;                        // Camera center
+    Point3 pixelZeroLoc;                  // Location of pixel 0, 0
+    Vec3 pixelDeltaU;                     // Offset to pixel to the right
+    Vec3 pixelDeltaV;                     // Offset to pixel below
+    Vec3 u, v, w;                         // Camera frame basis vectors
+    Vec3 defocusDiskU;                    // Defocus disk horizontal radius
+    Vec3 defocusDiskV;                    // Defocus disk vertical radius
 
     static const int imageComponents = 3;
     uint8_t *image;
@@ -91,11 +95,15 @@ private:
     std::vector<int> horizontalImageIter;
     std::vector<int> verticalImageIter;
     std::vector<int> samplesIter;
+    std::vector<int> sqrtSamplesIter;
 
     void Initialise()
     {
         imageHeight = static_cast<int>(imageWidth / aspectRatio);
         imageHeight = (imageHeight < 1) ? 1 : imageHeight;
+
+        sqrtSamplesPerPixel = int(std::sqrt(samplesPerPixel));
+        reciprocalSqrtSamplesPerPixel = 1.0 / sqrtSamplesPerPixel;
 
         centre = lookFrom;
 
@@ -130,6 +138,7 @@ private:
         horizontalImageIter.resize(imageWidth);
         verticalImageIter.resize(imageHeight);
         samplesIter.resize(samplesPerPixel);
+        sqrtSamplesIter.resize(sqrtSamplesPerPixel);
         for ( int i = 0; i < imageWidth; i++ ) {
             horizontalImageIter[i] = i;
         }
@@ -139,23 +148,43 @@ private:
         for ( int i = 0; i < samplesPerPixel; i++ ) {
             samplesIter[i] = i;
         }
+        for ( int i = 0; i < sqrtSamplesPerPixel; i++ ) {
+            sqrtSamplesIter[i] = i;
+        }
 
         image = new uint8_t[imageWidth * imageHeight * imageComponents];
     }
 
-    Ray GetRay(int i, int j) const
+    Ray GetRay(int i, int j, int s_i, int s_j) const
     {
-        // Get a randomly samples camerea for the pixel at a location i,j, originating form
-        // the camera defocus disk
+        // Construct a camera ray originating from the defocus disk and directed at a randomly
+        // sampled point around the pixel location i, j for stratified sample saquare s_i, s_j.
 
-        auto pixelCentre = pixelZeroLoc + (i * pixelDeltaU) + (j * pixelDeltaV);
-        auto pixelSample = pixelCentre + PixelSampleSource();
+        auto offset = SampleSquareStratified(s_i, s_j);
+        auto pixelSample = pixelZeroLoc + ((i + offset.X()) * pixelDeltaU) + ((j + offset.Y()) * pixelDeltaV);
 
         auto rayOrigin = (defocusAngle <= 0) ? centre : DefocusDiskSample();
         auto rayDirection = pixelSample - rayOrigin;
         auto rayTime = RandomDouble();
 
         return Ray(rayOrigin, rayDirection, rayTime);
+    }
+
+    Vec3 SampleSquareStratified(int s_i, int s_j) const
+    {
+        // Returns the vector to a random point in the square sub-pixel specified by grid
+        // indices s_i and s_j, for an idealised unit square pixel [-0.5, -0.5] to [0.5, 0.5]
+
+        auto px = ((s_i + RandomDouble()) * reciprocalSqrtSamplesPerPixel) - 0.5;
+        auto py = ((s_j + RandomDouble()) * reciprocalSqrtSamplesPerPixel) - 0.5;
+
+        return Vec3(px, py, 0);
+    }
+
+    Vec3 SampleSquare() const
+    {
+        // Returns the vector to a random point in the [-0.5, -0.5]-[0.5, 0.5] unit square.
+        return Vec3(RandomDouble() - 0.5, RandomDouble() - 0.5, 0);
     }
 
     Vec3 PixelSampleSource() const
