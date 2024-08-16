@@ -18,6 +18,8 @@ public:
     }
 
     virtual bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const = 0;
+
+    virtual double ScatteringPDF(const Ray &rayIn, const HitRecord &record, const Ray &scattered) const { return 0; }
 };
 
 class Lambertian : public Material
@@ -40,6 +42,12 @@ public:
         scattered = Ray(record.point, scatterDirection, rayIn.Time());
         attenuation = albedo->Value(record.u, record.v, record.point);
         return true;
+    }
+
+    double ScatteringPDF(const Ray &rayIn, const HitRecord &record, const Ray &scattered) const override
+    {
+        auto cosTheta = Dot(record.normal, UnitVector(scattered.Direction()));
+        return cosTheta < 0 ? 0 : cosTheta / PI;
     }
 };
 

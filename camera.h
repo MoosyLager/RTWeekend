@@ -218,7 +218,10 @@ private:
 
         if ( !record.material->Scatter(ray, record, attenuation, scattered) ) return colourFromEmission;
 
-        Colour colourFromScatter = attenuation * RayColour(scattered, depth - 1, world);
+        double scatteringPDF = record.material->ScatteringPDF(ray, record, scattered);
+        double pdfValue = scatteringPDF;
+
+        Colour colourFromScatter = (attenuation * scatteringPDF * RayColour(scattered, depth - 1, world)) / pdfValue;
 
         return colourFromEmission + colourFromScatter;
     }
