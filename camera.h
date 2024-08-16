@@ -122,7 +122,7 @@ private:
         auto viewportU = viewportWidth * u;   // Vector across viewport horizontal edge
         auto viewportV = viewportHeight * -v; // Vector down viewport vertical edge
 
-        // Calculate the horizontal and vertical ddlta vectors from pixel to pixel
+        // Calculate the horizontal and vertical delta vectors from pixel to pixel
         pixelDeltaU = viewportU / imageWidth;
         pixelDeltaV = viewportV / imageHeight;
 
