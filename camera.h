@@ -39,12 +39,12 @@ public:
         auto startTime = std::chrono::high_resolution_clock::now();
 
         int scanlinesRemaining = imageHeight;
-        std::for_each(std::execution::par, verticalImageIter.begin(), verticalImageIter.end(), [this, &world, &scanlinesRemaining](int j) {
+        std::for_each(std::execution::par_unseq, verticalImageIter.begin(), verticalImageIter.end(), [this, &world, &scanlinesRemaining](int j) {
             std::clog << "\rScanlines remaining: " << scanlinesRemaining-- << " " << std::flush;
-            std::for_each(std::execution::par, horizontalImageIter.begin(), horizontalImageIter.end(), [this, j, &world](int i) {
+            std::for_each(std::execution::par_unseq, horizontalImageIter.begin(), horizontalImageIter.end(), [this, j, &world](int i) {
                 Colour pixelColour(0, 0, 0);
-                std::for_each(std::execution::par, sqrtSamplesIter.begin(), sqrtSamplesIter.end(), [this, j, i, &world, &pixelColour](int s_j) {
-                    std::for_each(std::execution::par, sqrtSamplesIter.begin(), sqrtSamplesIter.end(), [this, j, i, &world, &pixelColour, s_j](int s_i) {
+                std::for_each(std::execution::par_unseq, sqrtSamplesIter.begin(), sqrtSamplesIter.end(), [this, j, i, &world, &pixelColour](int s_j) {
+                    std::for_each(std::execution::par_unseq, sqrtSamplesIter.begin(), sqrtSamplesIter.end(), [this, j, i, &world, &pixelColour, s_j](int s_i) {
                         Ray ray = GetRay(i, j, s_i, s_j);
                         pixelColour += RayColour(ray, maxDepth, world);
                     });
