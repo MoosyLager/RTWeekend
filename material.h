@@ -34,7 +34,8 @@ public:
 
     bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const override
     {
-        auto scatterDirection = record.normal + RandomUnitVector();
+        // auto scatterDirection = record.normal + RandomUnitVector();
+        auto scatterDirection = RandomOnHemisphere(record.normal);
 
         // Catch degenerate scatter direction
         if ( scatterDirection.NearZero() ) scatterDirection = record.normal;
@@ -46,8 +47,9 @@ public:
 
     double ScatteringPDF(const Ray &rayIn, const HitRecord &record, const Ray &scattered) const override
     {
-        auto cosTheta = Dot(record.normal, UnitVector(scattered.Direction()));
-        return cosTheta < 0 ? 0 : cosTheta / PI;
+        // auto cosTheta = Dot(record.normal, UnitVector(scattered.Direction()));
+        // return cosTheta < 0 ? 0 : cosTheta / PI;
+        return 1 / (2 * PI);
     }
 };
 
