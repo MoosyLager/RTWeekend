@@ -133,18 +133,24 @@ public:
 class Isotropic : public Material
 {
 private:
-    shared_ptr<Texture> albedo;
+    shared_ptr<Texture> tex;
 
 public:
-    Isotropic(Colour c) : albedo(make_shared<SolidColour>(c)) {}
+    Isotropic(Colour c) : tex(make_shared<SolidColour>(c)) {}
 
-    Isotropic(shared_ptr<Texture> a) : albedo(a) {}
+    Isotropic(shared_ptr<Texture> a) : tex(a) {}
 
     bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered, double &pdf) const override
     {
         scattered = Ray(record.point, RandomUnitVector(), rayIn.Time());
-        attenuation = albedo->Value(record.u, record.v, record.point);
+        attenuation = tex->Value(record.u, record.v, record.point);
+        pdf = 1 / (4 * PI);
         return true;
+    }
+
+    double ScatteringPDF(const Ray &rayIn, const HitRecord &record, const Ray &scattered) const override
+    {
+        return 1 / (4 * PI);
     }
 };
 
