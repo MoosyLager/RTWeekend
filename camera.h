@@ -214,12 +214,13 @@ private:
 
         Ray scattered;
         Colour attenuation;
+        double pdfValue;
         Colour colourFromEmission = record.material->Emitted(record.u, record.v, record.point);
 
-        if ( !record.material->Scatter(ray, record, attenuation, scattered) ) return colourFromEmission;
+        if ( !record.material->Scatter(ray, record, attenuation, scattered,pdfValue) ) return colourFromEmission;
 
         double scatteringPDF = record.material->ScatteringPDF(ray, record, scattered);
-        double pdfValue = scatteringPDF;
+        pdfValue = scatteringPDF;
 
         Colour colourFromScatter = (attenuation * scatteringPDF * RayColour(scattered, depth - 1, world)) / pdfValue;
 

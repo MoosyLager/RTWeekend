@@ -3,6 +3,7 @@
 
 #include "rtweekend.h"
 
+#include "onb.h"
 #include "texture.h"
 
 class HitRecord;
@@ -17,7 +18,7 @@ public:
         return Colour(0, 0, 0);
     }
 
-    virtual bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const = 0;
+    virtual bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered, double &pdf) const = 0;
 
     virtual double ScatteringPDF(const Ray &rayIn, const HitRecord &record, const Ray &scattered) const { return 0; }
 };
@@ -32,16 +33,14 @@ public:
 
     Lambertian(shared_ptr<Texture> a) : albedo(a) {}
 
-    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const override
+    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered, double &pdf) const override
     {
-        // auto scatterDirection = record.normal + RandomUnitVector();
-        auto scatterDirection = RandomOnHemisphere(record.normal);
+        ONB uvw(record.normal);
+        auto scatterDirection = uvw.Transform(RandomCosineDirection());
 
-        // Catch degenerate scatter direction
-        if ( scatterDirection.NearZero() ) scatterDirection = record.normal;
-
-        scattered = Ray(record.point, scatterDirection, rayIn.Time());
+        scattered = Ray(record.point, UnitVector(scatterDirection), rayIn.Time());
         attenuation = albedo->Value(record.u, record.v, record.point);
+        pdf = Dot(uvw.W(), scattered.Direction()) / PI;
         return true;
     }
 
@@ -62,7 +61,7 @@ private:
 public:
     Metal(const Colour &a, double f) : albedo(a), fuzz(f < 1 ? f : 1) {}
 
-    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const override
+    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered, double &pdf) const override
     {
         Vec3 reflected = Reflect(rayIn.Direction(), record.normal);
         scattered = Ray(record.point, reflected + fuzz * RandomInUnitSphere(), rayIn.Time());
@@ -87,7 +86,7 @@ private:
 public:
     Dielectric(double ir) : refractiveIndex(ir) {}
 
-    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const override
+    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered, double &pdf) const override
     {
         attenuation = Colour(1.0, 1.0, 1.0);
         double refractionRatio = record.frontFace ? (1.0 / refractiveIndex) : refractiveIndex;
@@ -120,7 +119,7 @@ public:
 
     DiffuseLight(Colour c) : emit(make_shared<SolidColour>(c)) {}
 
-    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const override
+    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered, double &pdf) const override
     {
         return false;
     }
@@ -141,7 +140,7 @@ public:
 
     Isotropic(shared_ptr<Texture> a) : albedo(a) {}
 
-    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered) const override
+    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered, double &pdf) const override
     {
         scattered = Ray(record.point, RandomUnitVector(), rayIn.Time());
         attenuation = albedo->Value(record.u, record.v, record.point);
