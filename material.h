@@ -13,7 +13,7 @@ class Material
 public:
     virtual ~Material() = default;
 
-    virtual Colour Emitted(double u, double v, const Point3 &p) const
+    virtual Colour Emitted(const Ray &rayIn, const HitRecord &record, double u, double v, const Point3 &p) const
     {
         return Colour(0, 0, 0);
     }
@@ -124,8 +124,9 @@ public:
         return false;
     }
 
-    Colour Emitted(double u, double v, const Point3 &p) const override
+    Colour Emitted(const Ray &rayIn, const HitRecord &record, double u, double v, const Point3 &p) const override
     {
+        if ( !record.frontFace ) return Colour(0, 0, 0);
         return emit->Value(u, v, p);
     }
 };

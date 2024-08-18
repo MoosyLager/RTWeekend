@@ -215,12 +215,25 @@ private:
         Ray scattered;
         Colour attenuation;
         double pdfValue;
-        Colour colourFromEmission = record.material->Emitted(record.u, record.v, record.point);
+        Colour colourFromEmission = record.material->Emitted(ray, record, record.u, record.v, record.point);
 
         if ( !record.material->Scatter(ray, record, attenuation, scattered,pdfValue) ) return colourFromEmission;
 
+        auto onLight = Point3(RandomDouble(213, 343), 554, RandomDouble(227, 332));
+        auto toLight = onLight - record.point;
+        auto distanceSquared = toLight.LengthSquared();
+        toLight = UnitVector(toLight);
+
+        if ( Dot(toLight, record.normal) < 0 ) return colourFromEmission;
+
+        double lightArea = (343 - 213) * (332 - 227);
+        auto lightCosine = std::fabs(toLight.Y());
+        if ( lightCosine < 0.000001 ) return colourFromEmission;
+
+        pdfValue = distanceSquared / (lightCosine * lightArea);
+        scattered = Ray(record.point, toLight, ray.Time());
+
         double scatteringPDF = record.material->ScatteringPDF(ray, record, scattered);
-        pdfValue = scatteringPDF;
 
         Colour colourFromScatter = (attenuation * scatteringPDF * RayColour(scattered, depth - 1, world)) / pdfValue;
 
