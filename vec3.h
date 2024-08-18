@@ -168,6 +168,19 @@ inline Vec3 RandomOnHemisphere(const Vec3 &normal)
     }
 }
 
+inline Vec3 RandomCosineDirection()
+{
+    auto r1 = RandomDouble();
+    auto r2 = RandomDouble();
+
+    auto phi = 2 * PI * r1;
+    auto x = std::cos(phi) * std::sqrt(r2);
+    auto y = std::sin(phi) * std::sqrt(r2);
+    auto z = std::sqrt(1 - r2);
+
+    return Vec3(x, y, z);
+}
+
 inline Vec3 Reflect(const Vec3 &v, const Vec3 &n)
 {
     return v - 2 * Dot(v, n) * n;
