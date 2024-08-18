@@ -5,6 +5,7 @@
 
 #include "hitable.h"
 #include "hitableList.h"
+#include "ray.h"
 #include "rtweekend.h"
 
 class Quad : public Hitable
@@ -17,6 +18,7 @@ private:
     Vec3 normal;
     double D;
     Vec3 w;
+    double area;
 
 public:
     Quad(const Point3 &_Q, const Vec3 &_u, const Vec3 &_v, shared_ptr<Material> _material)
@@ -26,6 +28,8 @@ public:
         normal = UnitVector(n);
         D = Dot(normal, Q);
         w = n / Dot(n, n);
+
+        area = n.Length();
 
         SetBoundingBox();
     }
@@ -75,6 +79,23 @@ public:
         record.u = a;
         record.v = b;
         return true;
+    }
+
+    double PDFValue(const Point3 &origin, const Vec3 &direction) const override
+    {
+        HitRecord record;
+        if ( !this->Hit(Ray(origin, direction, 0.0), Interval(0.001, maxDouble), record) ) return 0;
+
+        auto distanceSquared = record.t * record.t * direction.LengthSquared();
+        auto cosine = std::fabs(Dot(direction, record.normal) / direction.Length());
+
+        return distanceSquared / (cosine * area);
+    }
+
+    Vec3 Random(const Point3 &origin) const override
+    {
+        auto p = Q + (RandomDouble() * u) + (RandomDouble() * v);
+        return p - origin;
     }
 };
 

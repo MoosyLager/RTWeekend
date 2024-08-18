@@ -46,6 +46,16 @@ public:
 
     AABB BoundingBox() const override { return boundingBox; }
 
+    double PDFValue(const Point3 &origin, const Vec3 &direction) const override
+    {
+        return 0.0;
+    }
+
+    Vec3 Random(const Point3 &origin) const override
+    {
+        return Vec3(1, 0, 0);
+    }
+
 private:
     AABB boundingBox;
 };

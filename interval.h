@@ -44,8 +44,8 @@ public:
     // static const Interval empty, universe;
 };
 
-// static const Interval empty(+maxDouble, -maxDouble);
-// static const Interval universe(-maxDouble, +maxDouble);
+static const Interval empty(+maxDouble, -maxDouble);
+static const Interval universe(-maxDouble, +maxDouble);
 
 Interval operator+(const Interval &ival, double displacement)
 {

@@ -1,6 +1,7 @@
 #ifndef PDF_H
 #define PDF_H
 
+#include "hitableList.h"
 #include "onb.h"
 #include "rtweekend.h"
 
@@ -46,6 +47,26 @@ public:
     Vec3 Generate() const override
     {
         return uvw.Transform(RandomCosineDirection());
+    }
+};
+
+class HitablePDF : public PDF
+{
+private:
+    const Hitable &objects;
+    Point3 origin;
+
+public:
+    HitablePDF(const Hitable &objects, const Point3 &origin) : objects(objects), origin(origin) {}
+
+    double Value(const Vec3 &direction) const override
+    {
+        return objects.PDFValue(origin, direction);
+    }
+
+    Vec3 Generate() const override
+    {
+        return objects.Random(origin);
     }
 };
 

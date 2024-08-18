@@ -33,21 +33,21 @@ public:
     double defocusAngle = 0;   // Variation angle of rays through each pixel
     double focusDistance = 10; // Distance from camera lookfrom point to plane of perfect focus
 
-    void Render(const Hitable &world)
+    void Render(const Hitable &world,const Hitable&lights)
     {
         Initialise();
 
         auto startTime = std::chrono::high_resolution_clock::now();
 
         int scanlinesRemaining = imageHeight;
-        std::for_each(std::execution::par_unseq, verticalImageIter.begin(), verticalImageIter.end(), [this, &world, &scanlinesRemaining](int j) {
+        std::for_each(std::execution::par_unseq, verticalImageIter.begin(), verticalImageIter.end(), [this, &world, &scanlinesRemaining,&lights](int j) {
             std::clog << "\rScanlines remaining: " << scanlinesRemaining-- << " " << std::flush;
-            std::for_each(std::execution::par_unseq, horizontalImageIter.begin(), horizontalImageIter.end(), [this, j, &world](int i) {
+            std::for_each(std::execution::par_unseq, horizontalImageIter.begin(), horizontalImageIter.end(), [this, j, &world,&lights](int i) {
                 Colour pixelColour(0, 0, 0);
-                std::for_each(std::execution::par_unseq, sqrtSamplesIter.begin(), sqrtSamplesIter.end(), [this, j, i, &world, &pixelColour](int s_j) {
-                    std::for_each(std::execution::par_unseq, sqrtSamplesIter.begin(), sqrtSamplesIter.end(), [this, j, i, &world, &pixelColour, s_j](int s_i) {
+                std::for_each(std::execution::par_unseq, sqrtSamplesIter.begin(), sqrtSamplesIter.end(), [this, j, i, &world, &lights,&pixelColour](int s_j) {
+                    std::for_each(std::execution::par_unseq, sqrtSamplesIter.begin(), sqrtSamplesIter.end(), [this, j, i, &world, &lights,&pixelColour, s_j](int s_i) {
                         Ray ray = GetRay(i, j, s_i, s_j);
-                        pixelColour += RayColour(ray, maxDepth, world);
+                        pixelColour += RayColour(ray, maxDepth, world,lights);
                     });
                 });
                 int pixelIndex = 3 * (j * imageWidth + i);
@@ -203,7 +203,7 @@ private:
         return centre + (p[0] * defocusDiskU) + (p[1] * defocusDiskV);
     }
 
-    Colour RayColour(const Ray &ray, int depth, const Hitable &world)
+    Colour RayColour(const Ray &ray, int depth, const Hitable &world,const Hitable&lights)
     {
         HitRecord record;
 
@@ -220,13 +220,14 @@ private:
 
         if ( !record.material->Scatter(ray, record, attenuation, scattered,pdfValue) ) return colourFromEmission;
 
-        CosinePDF sufacePDF(record.normal);
-        scattered = Ray(record.point, sufacePDF.Generate(), ray.Time());
-        pdfValue = sufacePDF.Value(scattered.Direction());
+        HitablePDF lightPDF(lights,record.point);
+        scattered=Ray(record.point,lightPDF.Generate(),ray.Time());
+        pdfValue=lightPDF.Value(scattered.Direction());
 
         double scatteringPDF = record.material->ScatteringPDF(ray, record, scattered);
 
-        Colour colourFromScatter = (attenuation * scatteringPDF * RayColour(scattered, depth - 1, world)) / pdfValue;
+        Colour sampleColour=RayColour(scattered,depth-1,world,lights);
+        Colour colourFromScatter = (attenuation*scatteringPDF*sampleColour)/pdfValue;
 
         return colourFromEmission + colourFromScatter;
     }
