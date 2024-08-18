@@ -57,10 +57,6 @@ void FinalRenderBookOne()
 
     world = HitableList(make_shared<BVHNode>(world));
 
-    // Light Sources (placeholder)
-    auto emptyMaterial = shared_ptr<Material>();
-    Quad lights(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), emptyMaterial);
-
     Camera cam;
 
     cam.aspectRatio = 16.0 / 9.0;
@@ -77,7 +73,7 @@ void FinalRenderBookOne()
     cam.defocusAngle = 0.6;
     cam.focusDistance = 10.0;
 
-    cam.Render(world, lights);
+    cam.Render(world);
 }
 
 void RandomSpheres()
@@ -128,10 +124,6 @@ void RandomSpheres()
 
     world = HitableList(make_shared<BVHNode>(world));
 
-    // Light Sources (placeholder)
-    auto emptyMaterial = shared_ptr<Material>();
-    Quad lights(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), emptyMaterial);
-
     Camera cam;
 
     cam.aspectRatio = 16.0 / 9.0;
@@ -148,7 +140,7 @@ void RandomSpheres()
     cam.defocusAngle = 0.6;
     cam.focusDistance = 10.0;
 
-    cam.Render(world, lights);
+    cam.Render(world);
 }
 
 void TwoSpheres()
@@ -161,10 +153,6 @@ void TwoSpheres()
     world.Add(make_shared<Sphere>(Point3(0, 10, 0), 10, make_shared<Lambertian>(checkerTexture)));
 
     world = HitableList(make_shared<BVHNode>(world));
-
-    // Light Sources (placeholder)
-    auto emptyMaterial = shared_ptr<Material>();
-    Quad lights(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), emptyMaterial);
 
     Camera cam;
 
@@ -181,7 +169,7 @@ void TwoSpheres()
 
     cam.defocusAngle = 0;
 
-    cam.Render(world, lights);
+    cam.Render(world);
 }
 
 void Mars()
@@ -189,10 +177,6 @@ void Mars()
     auto marsTexture = make_shared<ImageTexture>("mars.jpg");
     auto marsSurface = make_shared<Lambertian>(marsTexture);
     auto planet = make_shared<Sphere>(Point3(0, 0, 0), 2, marsSurface);
-
-    // Light Sources (placeholder)
-    auto emptyMaterial = shared_ptr<Material>();
-    Quad lights(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), emptyMaterial);
 
     Camera cam;
 
@@ -209,7 +193,7 @@ void Mars()
 
     cam.defocusAngle = 0;
 
-    cam.Render(HitableList(planet), lights);
+    cam.Render(HitableList(planet));
 }
 
 void TwoPerlinSpheres()
@@ -221,10 +205,6 @@ void TwoPerlinSpheres()
     world.Add(make_shared<Sphere>(Point3(0, 2, 0), 2, make_shared<Lambertian>(perlinTexture)));
 
     world = HitableList(make_shared<BVHNode>(world));
-
-    // Light Sources (placeholder)
-    auto emptyMaterial = shared_ptr<Material>();
-    Quad lights(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), emptyMaterial);
 
     Camera cam;
 
@@ -241,7 +221,7 @@ void TwoPerlinSpheres()
 
     cam.defocusAngle = 0;
 
-    cam.Render(world, lights);
+    cam.Render(world);
 }
 
 void Quads()
@@ -264,10 +244,6 @@ void Quads()
 
     world = HitableList(make_shared<BVHNode>(world));
 
-    // Light Sources (placeholder)
-    auto emptyMaterial = shared_ptr<Material>();
-    Quad lights(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), emptyMaterial);
-
     Camera cam;
 
     cam.aspectRatio = 1.0;
@@ -283,7 +259,7 @@ void Quads()
 
     cam.defocusAngle = 0;
 
-    cam.Render(world, lights);
+    cam.Render(world);
 }
 
 void SimpleLight()
@@ -300,10 +276,6 @@ void SimpleLight()
 
     world = HitableList(make_shared<BVHNode>(world));
 
-    // Light Sources (placeholder)
-    auto emptyMaterial = shared_ptr<Material>();
-    Quad lights(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), emptyMaterial);
-
     Camera cam;
 
     cam.aspectRatio = 16.0 / 9.0;
@@ -319,7 +291,7 @@ void SimpleLight()
 
     cam.defocusAngle = 0;
 
-    cam.Render(world, lights);
+    cam.Render(world);
 }
 
 void CornellBox()
@@ -348,17 +320,13 @@ void CornellBox()
     box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
     world.Add(box2);
 
-    // Light Sources
-    auto emptyMaterial = shared_ptr<Material>();
-    Quad lights(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), emptyMaterial);
-
     world = HitableList(make_shared<BVHNode>(world));
 
     Camera cam;
 
     cam.aspectRatio = 1.0;
     cam.imageWidth = 600;
-    cam.samplesPerPixel = 10;
+    cam.samplesPerPixel = 1000;
     cam.maxDepth = 50;
     cam.background = Colour(0, 0, 0);
 
@@ -369,7 +337,7 @@ void CornellBox()
 
     cam.defocusAngle = 0;
 
-    cam.Render(world, lights);
+    cam.Render(world);
 }
 
 void CornellSmoke()
@@ -401,10 +369,6 @@ void CornellSmoke()
 
     world = HitableList(make_shared<BVHNode>(world));
 
-    // Light Sources (placeholder)
-    auto emptyMaterial = shared_ptr<Material>();
-    Quad lights(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), emptyMaterial);
-
     Camera cam;
 
     cam.aspectRatio = 1.0;
@@ -420,7 +384,7 @@ void CornellSmoke()
 
     cam.defocusAngle = 0;
 
-    cam.Render(world, lights);
+    cam.Render(world);
 }
 
 void FinalRenderBookTwo(int image_width, int samples_per_pixel, int max_depth)
@@ -484,10 +448,6 @@ void FinalRenderBookTwo(int image_width, int samples_per_pixel, int max_depth)
 
     world = HitableList(make_shared<BVHNode>(world));
 
-    // Light Sources (placeholder)
-    auto emptyMaterial = shared_ptr<Material>();
-    Quad lights(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), emptyMaterial);
-
     Camera cam;
 
     cam.aspectRatio = 1.0;
@@ -503,7 +463,7 @@ void FinalRenderBookTwo(int image_width, int samples_per_pixel, int max_depth)
 
     cam.defocusAngle = 0;
 
-    cam.Render(world, lights);
+    cam.Render(world);
 }
 
 int main()
