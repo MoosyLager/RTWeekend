@@ -13,6 +13,7 @@
 #include "colour.h"
 #include "hitable.h"
 #include "material.h"
+#include "pdf.h"
 #include "stbImplementation.h"
 
 class Camera
@@ -219,19 +220,9 @@ private:
 
         if ( !record.material->Scatter(ray, record, attenuation, scattered,pdfValue) ) return colourFromEmission;
 
-        auto onLight = Point3(RandomDouble(213, 343), 554, RandomDouble(227, 332));
-        auto toLight = onLight - record.point;
-        auto distanceSquared = toLight.LengthSquared();
-        toLight = UnitVector(toLight);
-
-        if ( Dot(toLight, record.normal) < 0 ) return colourFromEmission;
-
-        double lightArea = (343 - 213) * (332 - 227);
-        auto lightCosine = std::fabs(toLight.Y());
-        if ( lightCosine < 0.000001 ) return colourFromEmission;
-
-        pdfValue = distanceSquared / (lightCosine * lightArea);
-        scattered = Ray(record.point, toLight, ray.Time());
+        CosinePDF sufacePDF(record.normal);
+        scattered = Ray(record.point, sufacePDF.Generate(), ray.Time());
+        pdfValue = sufacePDF.Value(scattered.Direction());
 
         double scatteringPDF = record.material->ScatteringPDF(ray, record, scattered);
 
