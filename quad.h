@@ -12,11 +12,12 @@ class Quad : public Hitable
 private:
     Point3 Q;
     Vec3 u, v;
+    Vec3 w;
     shared_ptr<Material> material;
     AABB boundingBox;
     Vec3 normal;
     double D;
-    Vec3 w;
+    double area;
 
 public:
     Quad(const Point3 &_Q, const Vec3 &_u, const Vec3 &_v, shared_ptr<Material> _material)
@@ -27,12 +28,17 @@ public:
         D = Dot(normal, Q);
         w = n / Dot(n, n);
 
+        area = n.Length();
+
         SetBoundingBox();
     }
 
     virtual void SetBoundingBox()
     {
-        boundingBox = AABB(Q, Q + u + v).Pad();
+        // Compute the bounding box of all four vertices
+        auto boundingBoxDiagonal1 = AABB(Q, Q + u + v);
+        auto boundingBoxDiagonal2 = AABB(Q + u, Q + v);
+        boundingBox = AABB(boundingBoxDiagonal1, boundingBoxDiagonal2);
     }
 
     AABB BoundingBox() const override { return boundingBox; }
@@ -75,6 +81,23 @@ public:
         record.u = a;
         record.v = b;
         return true;
+    }
+
+    double PDFValue(const Point3 &origin, const Vec3 &direction) const override
+    {
+        HitRecord record;
+        if ( !this->Hit(Ray(origin, direction, 0.0), Interval(0.001, maxDouble), record) ) return 0;
+
+        auto distanceSquared = record.t * record.t * direction.LengthSquared();
+        auto cosine = std::fabs(Dot(direction, record.normal) / direction.Length());
+
+        return distanceSquared / (cosine * area);
+    }
+
+    Vec3 Random(const Point3 &origin) const override
+    {
+        auto p = Q + (RandomDouble() * u) + (RandomDouble() * v);
+        return p - origin;
     }
 };
 
