@@ -358,7 +358,7 @@ void CornellBox()
 
     cam.aspectRatio = 1.0;
     cam.imageWidth = 600;
-    cam.samplesPerPixel = 10;
+    cam.samplesPerPixel = 1000;
     cam.maxDepth = 50;
     cam.background = Colour(0, 0, 0);
 

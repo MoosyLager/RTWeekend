@@ -220,9 +220,12 @@ private:
 
         if ( !record.material->Scatter(ray, record, attenuation, scattered,pdfValue) ) return colourFromEmission;
 
-        HitablePDF lightPDF(lights, record.point);
-        scattered = Ray(record.point, lightPDF.Generate(), ray.Time());
-        pdfValue = lightPDF.Value(scattered.Direction());
+        auto p0 = make_shared<HitablePDF>(lights, record.point);
+        auto p1 = make_shared<CosinePDF>(record.normal);
+        MixturePDF mixedPDF(p0, p1);
+
+        scattered = Ray(record.point, mixedPDF.Generate(), ray.Time());
+        pdfValue = mixedPDF.Value(scattered.Direction());
 
         double scatteringPDF = record.material->ScatteringPDF(ray, record, scattered);
 
