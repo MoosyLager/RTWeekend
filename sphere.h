@@ -2,6 +2,7 @@
 #define SPHERE_H
 
 #include "hitable.h"
+#include "onb.h"
 #include "vec3.h"
 
 class Sphere : public Hitable
@@ -35,6 +36,19 @@ private:
 
         u = phi / (2 * PI);
         v = theta / PI;
+    }
+
+    static Vec3 RandomToSphere(double radius, double distanceSquared)
+    {
+        auto r1 = RandomDouble();
+        auto r2 = RandomDouble();
+        auto z = 1 + r2 * (std::sqrt(1 - radius * radius / distanceSquared) - 1);
+
+        auto phi = 2 * PI * r1;
+        auto x = std::cos(phi) * std::sqrt(1 - z * z);
+        auto y = std::sin(phi) * std::sqrt(1 - z * z);
+
+        return Vec3(x, y, z);
     }
 
 public:
@@ -93,12 +107,23 @@ public:
 
     double PDFValue(const Point3 &origin, const Vec3 &direction) const override
     {
-        return 0.0;
+        // This method only works for stationary spheres.
+
+        HitRecord record;
+        if ( !this->Hit(Ray(origin, direction, 0.0), Interval(0.001, maxDouble), record) ) return 0;
+
+        auto cosThetaMax = std::sqrt(1 - radius * radius / (centre1 - origin).LengthSquared());
+        auto solidAngle = 2 * PI * (1 - cosThetaMax);
+
+        return 1 / solidAngle;
     }
 
     Vec3 Random(const Point3 &origin) const override
     {
-        return Vec3(1, 0, 0);
+        Vec3 direction = centre1 - origin;
+        auto distanceSquared = direction.LengthSquared();
+        ONB uvw(direction);
+        return uvw.Transform(RandomToSphere(radius, distanceSquared));
     }
 };
 
