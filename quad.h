@@ -33,7 +33,7 @@ public:
         SetBoundingBox();
     }
 
-    virtual void SetBoundingBox()
+    void SetBoundingBox()
     {
         // Compute the bounding box of all four vertices
         auto boundingBoxDiagonal1 = AABB(Q, Q + u + v);
