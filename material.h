@@ -65,12 +65,17 @@ private:
 public:
     Metal(const Colour &a, double f) : albedo(a), fuzz(f < 1 ? f : 1) {}
 
-    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered, double &pdf) const override
+    bool Scatter(const Ray &rayIn, const HitRecord &record, ScatterRecord &sRecord) const override
     {
         Vec3 reflected = Reflect(rayIn.Direction(), record.normal);
-        scattered = Ray(record.point, reflected + fuzz * RandomInUnitSphere(), rayIn.Time());
-        attenuation = albedo;
-        return (Dot(scattered.Direction(), record.normal) > 0);
+        reflected = UnitVector(reflected) + (fuzz * RandomUnitVector());
+
+        sRecord.attenuation = albedo;
+        sRecord.pdfPtr = nullptr;
+        sRecord.skipPdf = true;
+        sRecord.skipPdfRay = Ray(record.point, reflected, rayIn.Time());
+
+        return true;
     }
 };
 
@@ -90,9 +95,11 @@ private:
 public:
     Dielectric(double ir) : refractiveIndex(ir) {}
 
-    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered, double &pdf) const override
+    bool Scatter(const Ray &rayIn, const HitRecord &record, ScatterRecord &sRecord) const override
     {
-        attenuation = Colour(1.0, 1.0, 1.0);
+        sRecord.attenuation = Colour(1.0, 1.0, 1.0);
+        sRecord.pdfPtr = nullptr;
+        sRecord.skipPdf = true;
         double refractionRatio = record.frontFace ? (1.0 / refractiveIndex) : refractiveIndex;
 
         Vec3 unitDirection = UnitVector(rayIn.Direction());
@@ -108,7 +115,7 @@ public:
             direction = Refract(unitDirection, record.normal, refractionRatio);
         }
 
-        scattered = Ray(record.point, direction, rayIn.Time());
+        sRecord.skipPdfRay = Ray(record.point, direction, rayIn.Time());
         return true;
     }
 };
@@ -123,7 +130,7 @@ public:
 
     DiffuseLight(Colour c) : emit(make_shared<SolidColour>(c)) {}
 
-    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered, double &pdf) const override
+    bool Scatter(const Ray &rayIn, const HitRecord &record, ScatterRecord &sRecord) const override
     {
         return false;
     }

@@ -338,7 +338,8 @@ void CornellBox()
     world.Add(make_shared<Quad>(Point3(555, 555, 555), Vec3(-555, 0, 0), Vec3(0, 0, -555), white));
     world.Add(make_shared<Quad>(Point3(0, 0, 555), Vec3(555, 0, 0), Vec3(0, 555, 0), white));
 
-    shared_ptr<Hitable> box1 = Box(Point3(0, 0, 0), Point3(165, 330, 165), white);
+    shared_ptr<Material> aluminium = make_shared<Metal>(Colour(0.8, 0.85, 0.88), 0.0);
+    shared_ptr<Hitable> box1 = Box(Point3(0, 0, 0), Point3(165, 330, 165), aluminium);
     box1 = make_shared<RotateY>(box1, 15);
     box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
     world.Add(box1);

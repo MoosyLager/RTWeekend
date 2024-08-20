@@ -218,6 +218,10 @@ private:
 
         if ( !record.material->Scatter(ray, record, sRecord) ) return colourFromEmission;
 
+        if ( sRecord.skipPdf ) {
+            return sRecord.attenuation * RayColour(sRecord.skipPdfRay, depth - 1, world, lights);
+        }
+
         auto lightPtr = make_shared<HitablePDF>(lights, record.point);
         MixturePDF p(lightPtr, sRecord.pdfPtr);
 
