@@ -213,24 +213,21 @@ private:
         // If the ray hits nothing, return the background colour
         if ( !world.Hit(ray, Interval(0.001, maxDouble), record) ) return background;
 
-        Ray scattered;
-        Colour attenuation;
-        double pdfValue;
+        ScatterRecord sRecord;
         Colour colourFromEmission = record.material->Emitted(ray, record, record.u, record.v, record.point);
 
-        if ( !record.material->Scatter(ray, record, attenuation, scattered,pdfValue) ) return colourFromEmission;
+        if ( !record.material->Scatter(ray, record, sRecord) ) return colourFromEmission;
 
-        auto p0 = make_shared<HitablePDF>(lights, record.point);
-        auto p1 = make_shared<CosinePDF>(record.normal);
-        MixturePDF mixedPDF(p0, p1);
+        auto lightPtr = make_shared<HitablePDF>(lights, record.point);
+        MixturePDF p(lightPtr, sRecord.pdfPtr);
 
-        scattered = Ray(record.point, mixedPDF.Generate(), ray.Time());
-        pdfValue = mixedPDF.Value(scattered.Direction());
+        Ray scattered = Ray(record.point, p.Generate(), ray.Time());
+        auto pdfValue = p.Value(scattered.Direction());
 
         double scatteringPDF = record.material->ScatteringPDF(ray, record, scattered);
 
         Colour sampleColour = RayColour(scattered, depth - 1, world, lights);
-        Colour colourFromScatter = (attenuation*scatteringPDF*sampleColour)/pdfValue;
+        Colour colourFromScatter = (sRecord.attenuation * scatteringPDF * sampleColour) / pdfValue;
 
         return colourFromEmission + colourFromScatter;
     }

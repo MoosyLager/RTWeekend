@@ -3,11 +3,19 @@
 
 #include "rtweekend.h"
 
-#include "onb.h"
+#include "pdf.h"
 #include "texture.h"
 
 class HitRecord;
 
+class ScatterRecord
+{
+public:
+    Colour attenuation;
+    shared_ptr<PDF> pdfPtr;
+    bool skipPdf;
+    Ray skipPdfRay;
+};
 class Material
 {
 public:
@@ -18,7 +26,7 @@ public:
         return Colour(0, 0, 0);
     }
 
-    virtual bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered, double &pdf) const = 0;
+    virtual bool Scatter(const Ray &rayIn, const HitRecord &record, ScatterRecord &sRecord) const = 0;
 
     virtual double ScatteringPDF(const Ray &rayIn, const HitRecord &record, const Ray &scattered) const { return 0; }
 };
@@ -33,22 +41,18 @@ public:
 
     Lambertian(shared_ptr<Texture> a) : albedo(a) {}
 
-    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered, double &pdf) const override
+    bool Scatter(const Ray &rayIn, const HitRecord &record, ScatterRecord &sRecord) const override
     {
-        ONB uvw(record.normal);
-        auto scatterDirection = uvw.Transform(RandomCosineDirection());
-
-        scattered = Ray(record.point, UnitVector(scatterDirection), rayIn.Time());
-        attenuation = albedo->Value(record.u, record.v, record.point);
-        pdf = Dot(uvw.W(), scattered.Direction()) / PI;
+        sRecord.attenuation = albedo->Value(record.u, record.v, record.point);
+        sRecord.pdfPtr = make_shared<CosinePDF>(record.normal);
+        sRecord.skipPdf = false;
         return true;
     }
 
     double ScatteringPDF(const Ray &rayIn, const HitRecord &record, const Ray &scattered) const override
     {
-        // auto cosTheta = Dot(record.normal, UnitVector(scattered.Direction()));
-        // return cosTheta < 0 ? 0 : cosTheta / PI;
-        return 1 / (2 * PI);
+        auto cosTheta = Dot(record.normal, UnitVector(scattered.Direction()));
+        return cosTheta < 0 ? 0 : cosTheta / PI;
     }
 };
 
@@ -141,11 +145,11 @@ public:
 
     Isotropic(shared_ptr<Texture> a) : tex(a) {}
 
-    bool Scatter(const Ray &rayIn, const HitRecord &record, Colour &attenuation, Ray &scattered, double &pdf) const override
+    bool Scatter(const Ray &rayIn, const HitRecord &record, ScatterRecord &sRecord) const override
     {
-        scattered = Ray(record.point, RandomUnitVector(), rayIn.Time());
-        attenuation = tex->Value(record.u, record.v, record.point);
-        pdf = 1 / (4 * PI);
+        sRecord.attenuation = tex->Value(record.u, record.v, record.point);
+        sRecord.pdfPtr = make_shared<SpherePDF>();
+        sRecord.skipPdf = false;
         return true;
     }
 
