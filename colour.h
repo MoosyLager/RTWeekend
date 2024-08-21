@@ -19,6 +19,11 @@ void WriteColour(uint8_t *image, int pixelIndex, Colour pixelColour, int samples
     auto G = pixelColour.Y();
     auto B = pixelColour.Z();
 
+    // Replace NaN components with 0.
+    if ( R != R ) R = 0.0;
+    if ( G != G ) G = 0.0;
+    if ( B != B ) B = 0.0;
+
     // Divide the colours by the number of samples
     auto scale = 1.0 / samplesPerPixel;
     R *= scale;
