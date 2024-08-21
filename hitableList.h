@@ -48,12 +48,20 @@ public:
 
     double PDFValue(const Point3 &origin, const Vec3 &direction) const override
     {
-        return 0.0;
+        auto weight = 1.0 / objects.size();
+        auto sum = 0.0;
+
+        for ( const auto &obj : objects ) {
+            sum += weight * obj->PDFValue(origin, direction);
+        }
+
+        return sum;
     }
 
     Vec3 Random(const Point3 &origin) const override
     {
-        return Vec3(1, 0, 0);
+        auto intSize = int(objects.size());
+        return objects[RandomInt(0, intSize - 1)]->Random(origin);
     }
 
 private:

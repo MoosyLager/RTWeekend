@@ -352,7 +352,9 @@ void CornellBox()
 
     // Light Sources
     auto emptyMaterial = shared_ptr<Material>();
-    Quad lights(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), emptyMaterial);
+    HitableList lights;
+    lights.Add(make_shared<Quad>(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), emptyMaterial));
+    lights.Add(make_shared<Sphere>(Point3(190, 90, 190), 90, emptyMaterial));
 
     Camera cam;
 
