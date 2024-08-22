@@ -488,7 +488,7 @@ void FinalRenderBookTwo(int image_width, int samples_per_pixel, int max_depth)
 
     // Light Sources
     auto emptyMaterial = shared_ptr<Material>();
-    Quad lights(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), emptyMaterial);
+    Quad lights(Point3(123, 554, 147), Vec3(300, 0, 0), Vec3(0, 0, 265), emptyMaterial);
 
     Camera cam;
 
@@ -510,7 +510,7 @@ void FinalRenderBookTwo(int image_width, int samples_per_pixel, int max_depth)
 
 int main()
 {
-    switch ( 8 ) {
+    switch ( 11 ) {
         case 1:
             FinalRenderBookOne();
             break;
@@ -542,7 +542,7 @@ int main()
             FinalRenderBookTwo(800, 10000, 40); // For final high resolution render
             break;
         case 11:
-            FinalRenderBookTwo(400, 250, 4); // For testing
+            FinalRenderBookTwo(400, 800, 4);  // For testing
             break;
     }
     return 0;
